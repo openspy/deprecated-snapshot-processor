@@ -17,7 +17,7 @@ LeaderboardProcessor.prototype.calculateAllTimeHighScoreForLevel = function(leve
         var highscore_key = dataset_name + ".highscore";
         var highscore_accessor_key = dataset_accessor_name + ".highscore";
 
-        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "mapnamecrc": level_crc.toString(), "rating": Number(3500).toString(), "type": "highscore"}}], function(err, cursor) {
+        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "highscore"}}], function(err, cursor) {
             
             var results = [];
  
@@ -45,7 +45,7 @@ LeaderboardProcessor.prototype.calculateAllTimeBestComboForLevel = function(leve
         var highcombo_key = dataset_name + ".highcombo";
         var highcombo_accessor_key = dataset_accessor_name + ".highcombo";
 
-        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highcombo_key: -1}}, {$limit: this.options.leaderboard_limit}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highcombo_accessor_key, "mapnamecrc": level_crc.toString(), "rating": Number(3500).toString(), "type": "bestcombo"}}], function(err, cursor) {
+        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highcombo_key: -1}}, {$limit: this.options.leaderboard_limit}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highcombo_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "bestcombo"}}], function(err, cursor) {
             var results = [];
  
             cursor.on('data', function(data) {
