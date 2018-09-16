@@ -56,7 +56,7 @@ function setupTHPS6PCProcessor(ctx, database) {
     Processors.push(Processor);
 }
 
-DbCtx.getDatabaseCtx().then(function(ctx) {
+DbCtx.getDatabaseCtx().then(async function(ctx) {
     var database = ctx.db('gamestats');
     setupTHPS5PS2Processor(ctx,database);
 	setupTHPS5PCProcessor(ctx, database);
@@ -64,9 +64,7 @@ DbCtx.getDatabaseCtx().then(function(ctx) {
 	setupTHPS6PCProcessor(ctx, database);
 	var promises = [];
     for(var i of Processors) {
-		promises.push(i.performAllCalculations());
+		await i.performAllCalculations();
     }
-	Promise.all(promises).then(function() {
-		
-	});
+    process.exit(1);
 });
