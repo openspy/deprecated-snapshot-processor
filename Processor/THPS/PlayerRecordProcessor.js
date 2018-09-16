@@ -13,7 +13,7 @@ PlayerRecordProcessor.prototype.processRecord = function(game_data, player_recor
         this.playerRecordModel.fetch({gameid: this.options.gameid, profileid: player_record.pid}).then(function(progress) {
             var record = {profileid: player_record.pid, highscore: parseInt(player_record.score), highcombo: parseInt(player_record.combo)};
             if(!progress.data) {
-                progress.data = {gametype_scores: {}, map_scores: {}, highscore: 0, highcombo: 0, num_games: 0, ranking: 0};
+                progress.data = {gametype_scores: {}, map_scores: {}, highscore: 0, highcombo: 0, num_games: 0, rating: 0};
             }
     
             var now = Date.now();
@@ -165,7 +165,7 @@ PlayerRecordProcessor.prototype.updatePlayerRanking = function(profileid) {
 
         await this.playerRecordModel.insertOrUpdate(player_progress);
 
-        update_data[this.options.persistStorageRatingKey] = ranking;
+        update_data[this.options.persistStorageRatingKey] = ranking.toString();
         return this.persistentStorage.UpdatePlayerKVStorage(profileid, this.options.gameid, 2, 0, update_data).then(resolve, reject);
     }.bind(this));
 

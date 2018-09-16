@@ -61,6 +61,7 @@ LeaderboardProcessor.prototype.calculateAllTimeBestComboForLevel = function(leve
     }.bind(this));
 };
 LeaderboardProcessor.prototype.setLeaderboard = function(results) {
+    console.log("SET LEADERBOARD", results);
     return new Promise(async function(resolve, reject) {
 
         var leaderboard_data = await this.leaderboardModel.fetch({gameid: this.options.gameid});
@@ -77,7 +78,7 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
                 entry.profileid = x.profileid;
                 entry.nick = x.nick;
                 entry.score = x.score;
-                entry.rating = parseInt(x.rating);
+                entry.rating = x.rating;
                 score_entries.push(entry);
             }
             score_entries.sort(function(a, b) {
