@@ -81,7 +81,7 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
                 score_entries.push(entry);
             }
             score_entries.sort(function(a, b) {
-                return a.score > b.score;
+                return a.score < b.score;
             });
             if(i.alltime) {
                 if(i.type == 'highscore') {
