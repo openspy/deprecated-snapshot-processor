@@ -102,6 +102,9 @@ PlayerRecordProcessor.prototype.calculatePlayerRanking = function(profileid) {
             var total = higher + lower + 1;
             var index = total - higher;
             var pct = (index-0.5)/total;
+            if(lower && !higher) pct = 1;
+            else if(!lower && higher) pct = 0;
+            
             resolve(pct);
         };
 
@@ -159,7 +162,9 @@ PlayerRecordProcessor.prototype.updatePlayerRanking = function(profileid) {
         if(!ranking) ranking = 0;
         else ranking = Math.trunc(ranking);
 
-        player_progress.data.rating = ranking;
+        player_progress.data.rating = ranking.toString();
+
+        console.log("SETTING RANKING", ranking);
 
         await this.playerRecordModel.insertOrUpdate(player_progress);
 
