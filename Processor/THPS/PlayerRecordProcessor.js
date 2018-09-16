@@ -87,7 +87,7 @@ PlayerRecordProcessor.prototype.processRecord = function(game_data, player_recor
             progress.gameid = this.options.gameid;
             progress.modified = Date.now();
     
-            return this.playerRecordModel.insertOrUpdate(progress).then(resolve, reject);
+            this.playerRecordModel.insertOrUpdate(progress).then(resolve, reject);
         }.bind(this));
     }.bind(this));
 }

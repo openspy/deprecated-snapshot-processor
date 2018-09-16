@@ -120,9 +120,13 @@ LeaderboardProcessor.prototype.calculateRecentBestComboForLevel = function(level
 };
 
 LeaderboardProcessor.prototype.setLeaderboard = function(results) {
+    
     return new Promise(async function(resolve, reject) {
+        
         var now = Date.now();
+
         var leaderboard_data = await this.leaderboardModel.fetch({gameid: this.options.gameid});
+
         if(!leaderboard_data.high_scores_alltime) {
             leaderboard_data.high_scores_alltime = {};
         }
@@ -155,6 +159,7 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
             score_entries.sort(function(a, b) {
                 return a.score < b.score;
             });
+            
             if(i.alltime) {
                 if(i.type == 'highscore') {
                     leaderboard_data.high_scores_alltime[i.level_crc] = score_entries;

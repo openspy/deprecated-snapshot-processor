@@ -19,16 +19,17 @@ THPSProcessor.prototype.calculateLeaderboard = function() {
         promises.push(this.leaderBoardProcessor.calculateRecentHighScoreForLevel(i));
         promises.push(this.leaderBoardProcessor.calculateRecentBestComboForLevel(i));
     }
-    return Promise.all(promises).then(function(res) { this.leaderBoardProcessor.setLeaderboard(res); }.bind(this));
+    return Promise.all(promises).then(function(res) { return this.leaderBoardProcessor.setLeaderboard(res); }.bind(this));
     
 }
 THPSProcessor.prototype.processSnapshots = function(snapshots) {
-    var promises = [];
-    for(var i of snapshots) {
-        promises.push(this.processSnapshot(i));
-    }
-
-    return Promise.all(promises);
+    return new Promise(async function(resolve, reject) {
+        for(var i of snapshots) {
+            await this.processSnapshot(i);
+        }
+    
+        resolve();
+    }.bind(this));
 };
 
 THPSProcessor.prototype.processSnapshot = function(snapshot) {
