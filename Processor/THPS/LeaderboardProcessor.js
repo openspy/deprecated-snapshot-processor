@@ -88,7 +88,7 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
                 }
             }            
         }
-        console.log("setting", leaderboard_data);
+
         await this.leaderboardModel.insertOrUpdate(leaderboard_data);
         resolve();
     }.bind(this));

@@ -1,12 +1,12 @@
 var PlayerRecordProcessor = require('./PlayerRecordProcessor');
 var LeaderboardProcessor = require('./LeaderboardProcessor');
-var SnapshotModel = require('../lib/SnapshotModel');
+var SnapshotModel = require('../../lib/SnapshotModel');
 function THPSProcessor(DbCtx, database, options) {
     //console.log("THPSProcessor options", options);
     this.options = options;
     this.DbCtx = DbCtx;
     this.database = database;
-    this.snapshotModel = new (SnapshotModel)(ctx, database);
+    this.snapshotModel = new (SnapshotModel)(DbCtx, database);
     this.playerRecordProcessor = new PlayerRecordProcessor(DbCtx, database,options);
     this.leaderBoardProcessor = new LeaderboardProcessor(DbCtx, database, options);
 }
@@ -56,10 +56,9 @@ THPSProcessor.prototype.processSnapshot = function(snapshot) {
     }.bind(this));
 };
 
-THPSProcessor.prototype.calculatePlayerRankings = function() {
-    return new Promise(function(resolve, reject) {
-        resolve();
-    });
+
+THPSProcessor.prototype.updatePlayerRankings = function() {
+    return this.playerRecordProcessor.updatePlayerRankings();
 }
 
 THPSProcessor.prototype.performAllCalculations = function() {
@@ -67,8 +66,9 @@ THPSProcessor.prototype.performAllCalculations = function() {
         var snapshots = await this.snapshotModel.getUnprocessedSnapshots({gameid: this.options.gameid})
         await this.processSnapshots(snapshots);
         await this.snapshotModel.markSnapshotsProcessed(snapshots);
-        await this.calculatePlayerRankings();
+        await this.updatePlayerRankings();
         await this.calculateLeaderboard();
+        resolve();
     }.bind(this));
 }
 
