@@ -60,10 +60,68 @@ LeaderboardProcessor.prototype.calculateAllTimeBestComboForLevel = function(leve
         
     }.bind(this));
 };
-LeaderboardProcessor.prototype.setLeaderboard = function(results) {
-    console.log("SET LEADERBOARD", results);
-    return new Promise(async function(resolve, reject) {
 
+LeaderboardProcessor.prototype.calculateRecentHighScoreForLevel = function(level_crc) {
+    return new Promise(function(resolve, reject) {
+        var dataset_name = "data.map_scores." + level_crc.toString();
+
+        var dataset_accessor_name = "$" + dataset_name;
+
+        var highscore_key = dataset_name + ".recent_highscore";
+        var highscore_accessor_key = dataset_accessor_name + ".recent_highscore";
+        var highscore_time_accessor_key = dataset_accessor_name + ".recent_highscore_time";
+
+        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "time": highscore_time_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "highscore"}}], function(err, cursor) {
+            
+            var results = [];
+ 
+            cursor.on('data', function(data) {
+                if(data.score)
+                    results.push(data);
+            });
+
+            cursor.on('end', function() {
+                resolve({results, level_crc, type: "highscore", "alltime": false, "recent": true});
+            })
+            
+            
+        })
+        
+    }.bind(this));
+};
+
+LeaderboardProcessor.prototype.calculateRecentBestComboForLevel = function(level_crc) {
+    return new Promise(function(resolve, reject) {
+        var dataset_name = "data.map_scores." + level_crc.toString();
+
+        var dataset_accessor_name = "$" + dataset_name;
+
+        var highscore_key = dataset_name + ".recent_highcombo";
+        var highscore_accessor_key = dataset_accessor_name + ".recent_highcombo";
+        var highscore_time_accessor_key = dataset_accessor_name + ".recent_highcombo_time";
+
+        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "time": highscore_time_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "highcombo"}}], function(err, cursor) {
+            
+            var results = [];
+ 
+            cursor.on('data', function(data) {
+                if(data.score)
+                    results.push(data);
+            });
+
+            cursor.on('end', function() {
+                resolve({results, level_crc, type: "highcombo", "alltime": false, "recent": true});
+            })
+            
+            
+        })
+        
+    }.bind(this));
+};
+
+LeaderboardProcessor.prototype.setLeaderboard = function(results) {
+    return new Promise(async function(resolve, reject) {
+        var now = Date.now();
         var leaderboard_data = await this.leaderboardModel.fetch({gameid: this.options.gameid});
         if(!leaderboard_data.high_scores_alltime) {
             leaderboard_data.high_scores_alltime = {};
@@ -71,6 +129,13 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
         if(!leaderboard_data.best_combos_alltime) {
             leaderboard_data.best_combos_alltime = {};
         }
+        if(!leaderboard_data.high_scores_recent) {
+            leaderboard_data.high_scores_recent = {};
+        }
+        if(!leaderboard_data.best_combos_recent) {
+            leaderboard_data.best_combos_recent = {};
+        }
+        
         for(var i of results) {
             var score_entries = [];
             for(var x of i.results) {
@@ -79,6 +144,12 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
                 entry.nick = x.nick;
                 entry.score = x.score;
                 entry.rating = x.rating;
+                if(x.time) {
+                    var diff = now - new Date(x.time).getTime();
+                    if(diff > this.options.recent_timerange) {
+                        continue;
+                    }
+                }
                 score_entries.push(entry);
             }
             score_entries.sort(function(a, b) {
@@ -90,9 +161,16 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
                 } else if(i.type == 'highcombo') {
                     leaderboard_data.best_combos_alltime[i.level_crc] = score_entries;
                 }
-            }  
+            } else {
+                if(i.type == 'highscore') {
+                    leaderboard_data.high_scores_recent[i.level_crc] = score_entries;
+                } else if(i.type == 'highcombo') {
+                    leaderboard_data.best_combos_recent[i.level_crc] = score_entries;
+                }
+                
+            }
         }
-        leaderboard_data.modified = Date.now();
+        leaderboard_data.modified = now;
         await this.leaderboardModel.insertOrUpdate(leaderboard_data);
         resolve();
     }.bind(this));

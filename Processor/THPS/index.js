@@ -16,6 +16,8 @@ THPSProcessor.prototype.calculateLeaderboard = function() {
     for(var i of this.options.map_crcs) {
         promises.push(this.leaderBoardProcessor.calculateAllTimeHighScoreForLevel(i));
         promises.push(this.leaderBoardProcessor.calculateAllTimeBestComboForLevel(i));
+        promises.push(this.leaderBoardProcessor.calculateRecentHighScoreForLevel(i));
+        promises.push(this.leaderBoardProcessor.calculateRecentBestComboForLevel(i));
     }
     return Promise.all(promises).then(function(res) { this.leaderBoardProcessor.setLeaderboard(res); }.bind(this));
     

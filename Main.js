@@ -23,6 +23,7 @@ DbCtx.getDatabaseCtx().then(function(ctx) {
     setupTHPS5PS2Processor(ctx,database);
     for(var i of Processors) {
         i.performAllCalculations().then(function() {
+            process.exit(1);
         });
     }
 });
