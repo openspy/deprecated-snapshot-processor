@@ -34,8 +34,8 @@ function setupTHPS6PS2Processor(ctx, database) {
 /*
 		
 */
-    //				 	 Level_BO	Level_AU	Level_BA	Level_BE	Level_NO	Level_ST	Level_SE	Level_SE2	Level_TR	Level_LA	Level_SC	Level_PH	Level_DJ	Level_CA	Level_AP
-    var int_map_crcs = [ -731335653, 36118178, 869308700, 884825349, 232021735, 1734639125, -1519529707, -1409913579, -1387023214, -1912087776,  855134571, -229054702, 717989981, 1917708845];
+    //				 	 Load_BO	Load_AU	Load_BA	Load_BE	Load_NO	Load_ST	Load_SE	Load_SE2	Load_TR	Load_LA	Load_SC	Load_PH	Load_DJ	Load_CA	Load_AP
+    var int_map_crcs = [ 706189655, -61328402, -844123056, -893226935, -2036148645, -206867541, -1726262439, -621173885, 1435058265, 1395431902, 1886975596, 1886975596, -863536089, 203934302, -726366959, -1942829215];
     //					  nettrickattack	netgraffiti netscorechallenge	netcombomambo	netslap		netking		netgoalattack netctf	  netfirefight
     var gametype_crcs = [ 818085795,		1580115212, 345515018, 		-989134896,		-103425741, 1861811616, -333443414,   1818227302, -1074579968 ];
 
@@ -46,11 +46,8 @@ function setupTHPS6PS2Processor(ctx, database) {
 
 
 function setupTHPS6PCProcessor(ctx, database) {
-/*
-		
-*/
-    //				 	 Level_BO	Level_AU	Level_BA	Level_BE	Level_NO	Level_ST	Level_SE	Level_SE2	Level_TR	Level_LA	Level_SC	Level_PH	Level_DJ	Level_CA	Level_AP
-    var int_map_crcs = [ -731335653, 36118178, 869308700, 884825349, 232021735, 1734639125, -1519529707, -1409913579, -1387023214, -1912087776,  855134571, -229054702, 717989981, 1917708845];
+    //				 	 Load_BO	Load_AU	Load_BA	Load_BE	Load_NO	Load_ST	Load_SE	Load_SE2	Load_TR	Load_LA	Load_SC	Load_PH	Load_DJ	Load_CA	Load_AP
+    var int_map_crcs = [ 706189655, -61328402, -844123056, -893226935, -2036148645, -206867541, -1726262439, -621173885, 1435058265, 1395431902, 1886975596, 1886975596, -863536089, 203934302, -726366959, -1942829215];
     //					  nettrickattack	netgraffiti netscorechallenge	netcombomambo	netslap		netking		netgoalattack netctf	  netfirefight
     var gametype_crcs = [ 818085795,		1580115212, 345515018, 		-989134896,		-103425741, 1861811616, -333443414,   1818227302, -1074579968 ];
 
@@ -67,6 +64,9 @@ DbCtx.getDatabaseCtx().then(function(ctx) {
 	setupTHPS6PCProcessor(ctx, database);
 	var promises = [];
     for(var i of Processors) {
-		promises(i.performAllCalculations());
+		promises.push(i.performAllCalculations());
     }
+	Promise.all(promises).then(function() {
+		
+	});
 });
