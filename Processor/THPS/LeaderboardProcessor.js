@@ -80,15 +80,18 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
                 entry.rating = parseInt(x.rating);
                 score_entries.push(entry);
             }
+            score_entries.sort(function(a, b) {
+                return a.score > b.score;
+            });
             if(i.alltime) {
                 if(i.type == 'highscore') {
                     leaderboard_data.high_scores_alltime[i.level_crc] = score_entries;
                 } else if(i.type == 'highcombo') {
                     leaderboard_data.best_combos_alltime[i.level_crc] = score_entries;
                 }
-            }            
+            }  
         }
-        console.log("insertOrUpdate", leaderboard_data);
+        leaderboard_data.modified = Date.now();
         await this.leaderboardModel.insertOrUpdate(leaderboard_data);
         resolve();
     }.bind(this));

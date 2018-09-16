@@ -94,7 +94,6 @@ PlayerRecordProcessor.prototype.processRecord = function(game_data, player_recor
 
 PlayerRecordProcessor.prototype.calculatePlayerRanking = function(profileid) {
     return new Promise(async function(resolve, reject) {
-        //this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highcombo_key: -1}}, {$limit: this.options.leaderboard_limit}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highcombo_accessor_key, "mapnamecrc": level_crc.toString(), "rating": Number(3500).toString(), "type": "bestcombo"}}], function(err, cursor) {
         var player_progress = await this.playerRecordModel.fetch({gameid: this.options.gameid, profileid});
         var higher, lower;
 
