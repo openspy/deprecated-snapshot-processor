@@ -151,12 +151,17 @@ PlayerRecordProcessor.prototype.getPlayerScores = function(profileid) {
 }
 PlayerRecordProcessor.prototype.updatePlayerRanking = function(profileid) {
     return new Promise(async function(resolve, reject) {
+        var player_progress = await this.playerRecordModel.fetch({gameid: this.options.gameid, profileid});
         var percent = await this.calculatePlayerRanking(profileid);
         var ranking = percent * this.options.rating_bounds.max;
         var update_data = {};
 
         if(!ranking) ranking = 0;
         else ranking = Math.trunc(ranking);
+
+        player_progress.data.rating = ranking;
+
+        await this.playerRecordModel.insertOrUpdate(player_progress);
 
         update_data[this.options.persistStorageRatingKey] = ranking.toString();
         return this.persistentStorage.UpdatePlayerKVStorage(profileid, this.options.gameid, 2, 0, update_data).then(resolve, reject);
