@@ -34,18 +34,18 @@ PlayerRecordProcessor.prototype.processRecord = function(game_data, player_recor
                 progress.data.highcombo = record.highcombo;
             }
     
-            if(progress.data.highscore > progress.data.map_scores[map_key].highscore) {
-                progress.data.map_scores[map_key].highscore = progress.data.highscore;
+            if(record.highscore > progress.data.map_scores[map_key].highscore) {
+                progress.data.map_scores[map_key].highscore = record.highscore;
             }
-            if(progress.data.highcombo > progress.data.map_scores[map_key].highcombo) {
-                progress.data.map_scores[map_key].highcombo = progress.data.highcombo;
+            if(record.highcombo > progress.data.map_scores[map_key].highcombo) {
+                progress.data.map_scores[map_key].highcombo = record.highcombo;
             }
             
-            if(progress.data.highscore > progress.data.gametype_scores[game_key].highscore) {
-                progress.data.gametype_scores[game_key].highscore = progress.data.highscore;
+            if(record.highscore > progress.data.gametype_scores[game_key].highscore) {
+                progress.data.gametype_scores[game_key].highscore = record.highscore;
             }
-            if(progress.data.highcombo > progress.data.gametype_scores[game_key].highcombo) {
-                progress.data.gametype_scores[game_key].highcombo = progress.data.highcombo;
+            if(record.highcombo > progress.data.gametype_scores[game_key].highcombo) {
+                progress.data.gametype_scores[game_key].highcombo = record.highcombo;
             }
     
             //best timescores
