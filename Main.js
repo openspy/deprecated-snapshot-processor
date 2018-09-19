@@ -31,11 +31,8 @@ function setupTHPS5PCProcessor(ctx, database) {
 }
 
 function setupTHPS6PS2Processor(ctx, database) {
-/*
-		
-*/
-    //				 	 Load_BO	Load_AU	Load_BA	Load_BE	Load_NO	Load_ST	Load_SE	Load_SE2	Load_TR	Load_LA	Load_SC	Load_PH	Load_DJ	Load_CA	Load_AP
-    var int_map_crcs = [ 706189655, -61328402, -844123056, -893226935, -2036148645, -206867541, -1726262439, -621173885, 1435058265, 1395431902, 1886975596, 1886975596, -863536089, 203934302, -726366959, -1942829215];
+    //  Load_TR Load_BO Load_BA Load_BE Load_AU Load_NO Load_SE Load_SE2    Load_SC Load_PH Load_DJ Load_LA Load_CA Load_AP
+    var int_map_crcs = [ 1435058265, 706189655, -844123056, -893226935, -61328402, -2036148645, -1726262439, -621173885, 1886975596, -863536089, 203934302, 1395431902,  -726366959, -1942829215];
     //					  nettrickattack	netgraffiti netscorechallenge	netcombomambo	netslap		netking		netgoalattack netctf	  netfirefight
     var gametype_crcs = [ 818085795,		1580115212, 345515018, 		-989134896,		-103425741, 1861811616, -333443414,   1818227302, -1074579968 ];
 
@@ -46,8 +43,8 @@ function setupTHPS6PS2Processor(ctx, database) {
 
 
 function setupTHPS6PCProcessor(ctx, database) {
-    //				 	 Load_BO	Load_AU	Load_BA	Load_BE	Load_NO	Load_ST	Load_SE	Load_SE2	Load_TR	Load_LA	Load_SC	Load_PH	Load_DJ	Load_CA	Load_AP
-    var int_map_crcs = [ 706189655, -61328402, -844123056, -893226935, -2036148645, -206867541, -1726262439, -621173885, 1435058265, 1395431902, 1886975596, 1886975596, -863536089, 203934302, -726366959, -1942829215];
+    //  Load_TR Load_BO Load_BA Load_BE Load_AU Load_NO Load_SE Load_SE2    Load_SC Load_PH Load_DJ Load_LA Load_CA Load_AP
+    var int_map_crcs = [ 1435058265, 706189655, -844123056, -893226935, -61328402, -2036148645, -1726262439, -621173885, 1886975596, -863536089, 203934302, 1395431902,  -726366959, -1942829215];
     //					  nettrickattack	netgraffiti netscorechallenge	netcombomambo	netslap		netking		netgoalattack netctf	  netfirefight
     var gametype_crcs = [ 818085795,		1580115212, 345515018, 		-989134896,		-103425741, 1861811616, -333443414,   1818227302, -1074579968 ];
 
