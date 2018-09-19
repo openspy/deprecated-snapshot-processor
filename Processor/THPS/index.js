@@ -25,7 +25,11 @@ THPSProcessor.prototype.calculateLeaderboard = function() {
 THPSProcessor.prototype.processSnapshots = function(snapshots) {
     return new Promise(async function(resolve, reject) {
         for(var i of snapshots) {
-            await this.processSnapshot(i);
+            try {
+                await this.processSnapshot(i);
+            } catch(e) {
+                console.error(e);
+            }
         }
     
         resolve();
