@@ -82,7 +82,7 @@ PlayerRecordProcessor.prototype.processRecord = function(game_data, player_recor
             progress.data.num_games++;
     
     
-            progress.last_name = player_record.name;
+            progress.last_name = player_record.name.replace(/\//g, "\\")
             progress.profileid = player_record.pid;
             progress.gameid = this.options.gameid;
             progress.modified = Date.now();
