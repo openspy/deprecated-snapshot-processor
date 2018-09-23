@@ -119,7 +119,7 @@ PlayerRecordProcessor.prototype.calculatePlayerRanking = function(profileid) {
             })
         });
 
-        this.playerRecordModel.collection.aggregate([{"$match": {gameid: this.options.gameid, "data.highscore": {$gte: player_progress.data.highscore}}}, {$group: {_id: null, count: {$sum: 1}}}], function(err, cursor) {
+        this.playerRecordModel.collection.aggregate([{"$match": {gameid: this.options.gameid, "data.highscore": {$gt: player_progress.data.highscore}}}, {$group: {_id: null, count: {$sum: 1}}}], function(err, cursor) {
             var results = []; 
             cursor.on('data', function(data) {
                 higher = data.count;
