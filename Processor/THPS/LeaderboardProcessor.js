@@ -19,7 +19,7 @@ LeaderboardProcessor.prototype.calculateAllTimeHighScoreForLevel = function(leve
 
         this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "highscore"}}], function(err, cursor) {
             
-            var results = [];
+            let results = [];
  
             cursor.on('data', function(data) {
                 if(data.score)
@@ -46,9 +46,12 @@ LeaderboardProcessor.prototype.calculateAllTimeBestComboForLevel = function(leve
         var highcombo_accessor_key = dataset_accessor_name + ".highcombo";
 
         this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highcombo_key: -1}}, {$limit: this.options.leaderboard_limit}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highcombo_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "bestcombo"}}], function(err, cursor) {
-            var results = [];
+            let results = [];
  
             cursor.on('data', function(data) {
+                if(data.profileid == 18304) {
+                    console.log(level_crc, data);
+                }
                 if(data.score)
                     results.push(data);
             });
@@ -73,7 +76,7 @@ LeaderboardProcessor.prototype.calculateRecentHighScoreForLevel = function(level
 
         this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "time": highscore_time_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "highscore"}}], function(err, cursor) {
             
-            var results = [];
+            let results = [];
  
             cursor.on('data', function(data) {
                 if(data.score)
@@ -102,7 +105,7 @@ LeaderboardProcessor.prototype.calculateRecentBestComboForLevel = function(level
 
         this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "time": highscore_time_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "highcombo"}}], function(err, cursor) {
             
-            var results = [];
+            let results = [];
  
             cursor.on('data', function(data) {
                 if(data.score)
@@ -123,9 +126,9 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
     
     return new Promise(async function(resolve, reject) {
         
-        var now = Date.now();
+        let now = Date.now();
 
-        var leaderboard_data = await this.leaderboardModel.fetch({gameid: this.options.gameid});
+        let leaderboard_data = await this.leaderboardModel.fetch({gameid: this.options.gameid});
 
         if(!leaderboard_data.high_scores_alltime) {
             leaderboard_data.high_scores_alltime = {};
@@ -141,15 +144,15 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
         }
         
         for(var i of results) {
-            var score_entries = [];
+            let score_entries = [];
             for(var x of i.results) {
-                var entry = {};
+                let entry = {};
                 entry.profileid = x.profileid;
                 entry.nick = x.nick;
                 entry.score = x.score;
                 entry.rating = x.rating;
                 if(x.time) {
-                    var diff = now - new Date(x.time).getTime();
+                    let diff = now - new Date(x.time).getTime();
                     if(diff > this.options.recent_timerange) {
                         continue;
                     }

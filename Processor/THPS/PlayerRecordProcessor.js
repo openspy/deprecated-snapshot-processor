@@ -11,14 +11,14 @@ function PlayerRecordProcessor(DbCtx, database, options) {
 PlayerRecordProcessor.prototype.processRecord = function(game_data, player_record) {
     return new Promise(function(resolve, reject) {
         this.playerRecordModel.fetch({gameid: this.options.gameid, profileid: player_record.pid}).then(function(progress) {
-            var record = {profileid: player_record.pid, highscore: parseInt(player_record.score), highcombo: parseInt(player_record.combo)};
+            let record = {profileid: player_record.pid, highscore: parseInt(player_record.score), highcombo: parseInt(player_record.combo)};
             if(!progress.data) {
                 progress.data = {gametype_scores: {}, map_scores: {}, highscore: 0, highcombo: 0, num_games: 0, rating: 0};
             }
     
-            var now = Date.now();
-            var map_key = game_data.mapcrc;
-            var game_key = game_data.gametypecrc;
+            let now = Date.now();
+            let map_key = game_data.mapcrc;
+            let game_key = game_data.gametypecrc;
             if(!progress.data.gametype_scores[game_key]) {
                 progress.data.gametype_scores[game_key] = {highcombo: 0, highscore: 0, recent_highscore: 0, recent_highscore_time: now, recent_highcombo: 0, recent_highcombo_time: now};
             }
@@ -49,8 +49,8 @@ PlayerRecordProcessor.prototype.processRecord = function(game_data, player_recor
             }
     
             //best timescores
-            var recent_diff = this.options.recent_timerange;
-            var min_time = now - recent_diff;
+            let recent_diff = this.options.recent_timerange;
+            let min_time = now - recent_diff;
             if(record.highscore > progress.data.recent_highscore || (!progress.data.recent_highscore_time || progress.data.recent_highscore_time < min_time)) {
                 progress.data.recent_highscore_time = now;
                 progress.data.recent_highscore = record.highscore;
@@ -95,21 +95,20 @@ PlayerRecordProcessor.prototype.processRecord = function(game_data, player_recor
 
 PlayerRecordProcessor.prototype.calculatePlayerRanking = function(profileid) {
     return new Promise(async function(resolve, reject) {
-        var player_progress = await this.playerRecordModel.fetch({gameid: this.options.gameid, profileid});
-        var higher, lower;
+        let player_progress = await this.playerRecordModel.fetch({gameid: this.options.gameid, profileid});
+        let higher, lower;
 
         var doCalculations = function() {
-            var total = higher + lower + 1;
-            var index = total - higher;
-            var pct = (index-0.5)/total;
+            let total = higher + lower + 1;
+            let index = total - higher;
+            let pct = (index-0.5)/total;
             if(lower && !higher) pct = 1;
             else if(!lower && higher) pct = 0;
             resolve(pct);
         };
 
-        var num_waiting = 2;
+        let num_waiting = 2;
         this.playerRecordModel.collection.aggregate([{"$match": {gameid: this.options.gameid, "data.highscore": {$lte: player_progress.data.highscore}}}, {$group: {_id: null, count: {$sum: 1}}}], function(err, cursor) {
-            var results = []; 
             cursor.on('data', function(data) {
                 lower = data.count;
             });
@@ -120,7 +119,6 @@ PlayerRecordProcessor.prototype.calculatePlayerRanking = function(profileid) {
         });
 
         this.playerRecordModel.collection.aggregate([{"$match": {gameid: this.options.gameid, "data.highscore": {$gt: player_progress.data.highscore}}}, {$group: {_id: null, count: {$sum: 1}}}], function(err, cursor) {
-            var results = []; 
             cursor.on('data', function(data) {
                 higher = data.count;
             });
@@ -153,10 +151,10 @@ PlayerRecordProcessor.prototype.getPlayerScores = function(profileid) {
 }
 PlayerRecordProcessor.prototype.updatePlayerRanking = function(profileid) {
     return new Promise(async function(resolve, reject) {
-        var player_progress = await this.playerRecordModel.fetch({gameid: this.options.gameid, profileid});
-        var percent = await this.calculatePlayerRanking(profileid);
-        var ranking = percent * this.options.rating_bounds.max;
-        var update_data = {};
+        let player_progress = await this.playerRecordModel.fetch({gameid: this.options.gameid, profileid});
+        let percent = await this.calculatePlayerRanking(profileid);
+        let ranking = percent * this.options.rating_bounds.max;
+        let update_data = {};
 
         if(!ranking) ranking = 0;
         else ranking = Math.trunc(ranking);
@@ -173,9 +171,9 @@ PlayerRecordProcessor.prototype.updatePlayerRanking = function(profileid) {
 
 PlayerRecordProcessor.prototype.updatePlayerPersistScore = async function(profileid) {
     var score_data = await this.getPlayerScores(profileid);
-    var promises = [];
+    let promises = [];
     for(var x=0;x<score_data.highscores.length;x++) {
-        var update_data = {};
+        let update_data = {};
         update_data[this.options.persistStorageHighScoreKey] = score_data.highscores[x];
         update_data[this.options.persistStorageHighComboKey] = score_data.highcombos[x];
         this.persistentStorage.UpdatePlayerKVStorage(profileid, this.options.gameid, 2, x, update_data)
@@ -188,10 +186,10 @@ PlayerRecordProcessor.prototype.updatePlayerPersistScore = async function(profil
 PlayerRecordProcessor.prototype.updatePlayerRankings = function() {
     return new Promise(async function(resolve, reject) {
         this.playerRecordModel.collection.aggregate([{$match: {gameid: this.options.gameid}}, {$group: {_id: null, profileids: {$addToSet: "$profileid"}}}], function(err, cursor) {
-            var profileids = [];
-            var doCalculations = function() {
+            let profileids = [];
+            let doCalculations = function() {
                 var promises = [];
-                for(var i of profileids) {
+                for(let i of profileids) {
                     promises.push(this.updatePlayerRanking(i));
                     promises.push(this.updatePlayerPersistScore(i));
                 }

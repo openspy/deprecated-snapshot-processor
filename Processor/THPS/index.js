@@ -41,9 +41,9 @@ THPSProcessor.prototype.processSnapshot = function(snapshot) {
         if(!snapshot || !snapshot.updates || snapshot.updates.length != 1) {
             return reject({message: "invalid snapshot data"});
         }
-        var game_data = snapshot.updates[0].data;
+        let game_data = snapshot.updates[0].data;
 
-        var game_length = parseInt(game_data.timelimit);
+        let game_length = parseInt(game_data.timelimit);
 
         if(game_length > 120) { //skip matches > 2 mins
             return resolve();
@@ -51,7 +51,7 @@ THPSProcessor.prototype.processSnapshot = function(snapshot) {
 
         var max_players = parseInt(game_data.maxplayers);
         for(var i=0;i<max_players;i++) {
-            var player_record = {};
+            let player_record = {};
             if(game_data["pid_"+i] === undefined) continue;
             player_record.name = game_data["player_"+i];
             player_record.pid = parseInt(game_data["pid_"+i]);            
@@ -70,7 +70,7 @@ THPSProcessor.prototype.updatePlayerRankings = function() {
 
 THPSProcessor.prototype.performAllCalculations = function() {
     return new Promise(async function(resolve, reject) {
-        var snapshots = await this.snapshotModel.getUnprocessedSnapshots({gameid: this.options.gameid})
+        let snapshots = await this.snapshotModel.getUnprocessedSnapshots({gameid: this.options.gameid})
         await this.processSnapshots(snapshots);
         await this.snapshotModel.markSnapshotsProcessed(snapshots);
         await this.updatePlayerRankings();
