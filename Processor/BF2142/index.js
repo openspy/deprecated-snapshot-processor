@@ -19,6 +19,7 @@ BF2142Processor.prototype.calculateLeaderboard = function() {
 BF2142Processor.prototype.performAllCalculations = function() {
     return new Promise(async function(resolve, reject) {
         let snapshots = await this.snapshotModel.getUnprocessedSnapshots({gameid: this.options.gameid})
+
         //let snapshots = [dbg_snapshot];
         await this.snapshotProcessor.processSnapshots(snapshots);
         await this.calculateLeaderboard();

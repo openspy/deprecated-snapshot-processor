@@ -4,7 +4,7 @@ function SnapshotProcessor(DbCtx, database, options) {
 }
 SnapshotProcessor.prototype.processSnapshots = function(snapshots) {
     return new Promise(async function(resolve, reject) {
-        for(var i of snapshots) {
+        for(let i of snapshots) {
             try {
                 await this.processSnapshot(i);
             } catch(e) {
@@ -29,25 +29,25 @@ SnapshotProcessor.prototype.processSnapshot = function(snapshot) {
             player_profileid = game_data[pid_key];
         } while(player_profileid !== undefined);
 
-        var player_variables = [];
+        let player_variables = [];
         for(let i=0;i<num_players;i++) {
             player_variables[i] = {};
         }
-        var server_variables = {};
-        var obj_keys = Object.keys(game_data);
+        let server_variables = {};
+        let obj_keys = Object.keys(game_data);
         for(let i =0;i<obj_keys.length;i++) {
-            var match = obj_keys[i].match(/_\d+$/);
+            let match = obj_keys[i].match(/_\d+$/);
             if(match == null) {
                 server_variables[obj_keys[i]] = game_data[obj_keys[i]];
                 continue;
             }
-            var player_index = parseInt(match[0].substring(1));
-            var variable_name = obj_keys[i].substring(0, obj_keys[i].length - match[0].length);
+            let player_index = parseInt(match[0].substring(1));
+            let variable_name = obj_keys[i].substring(0, obj_keys[i].length - match[0].length);
             player_variables[player_index][variable_name] = game_data[obj_keys[i]];
 
         }
 
-        var player_progress_promises = [];
+        let player_progress_promises = [];
         for(let i=0;i<num_players;i++) {
             player_variables[i].pid = parseInt(player_variables[i].pid);
             player_progress_promises.push(this.playerRecordProcessor.processRecord(server_variables, player_variables[i]));

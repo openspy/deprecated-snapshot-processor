@@ -238,10 +238,16 @@ async function doPlayerProgressDebug(ctx, database) {
     ];
 
     var processor = new BF2142Processor(ctx, database, {gameid: 1324, scoreSettings, awardSettings})
+    /*
+                nearest.globalscore += gsco;
+            nearest.points += (gsco + experiencepoints);
+            nearest.experiencepoints += experiencepoints;
+     */
 
-    await processor.snapshotProcessor.playerRecordProcessor.playerProgressProcessor.processSnapshot({hostname: "hello", mapend: "1572021200"}, {gsco: 100, pid: 123});
-    await processor.snapshotProcessor.playerRecordProcessor.playerProgressProcessor.processSnapshot({hostname: "hello", mapend: "1572021200"}, {gsco: 666, pid: 123});
-    await processor.snapshotProcessor.playerRecordProcessor.playerProgressProcessor.processSnapshot({hostname: "hello", mapend: "1572021200"}, {gsco: 11, pid: 123});
+    await processor.snapshotProcessor.playerRecordProcessor.playerProgressProcessor.processSnapshot({hostname: "hello", mapend: "1572021200"}, {gsco: 100, pid: 123, crpt: 12});
+    await processor.snapshotProcessor.playerRecordProcessor.playerProgressProcessor.processSnapshot({hostname: "hello", mapend: "1572021200"}, {gsco: 666, pid: 123, crpt: 12});
+    await processor.snapshotProcessor.playerRecordProcessor.playerProgressProcessor.processSnapshot({hostname: "hello", mapend: "1572021200"}, {gsco: 11, pid: 123, crpt: 12});
+    //await processor.snapshotProcessor.playerRecordProcessor.playerProgressProcessor.processSnapshot({hostname: "hello", mapend: "1573321300"}, {gsco: 100, pid: 123, crpt: 12});
 }
 DbCtx.getDatabaseCtx().then(async function(ctx) {
     var database = ctx.db('gamestats');

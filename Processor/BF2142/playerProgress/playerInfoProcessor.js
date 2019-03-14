@@ -205,14 +205,17 @@ PlayerInfoProcessor.prototype.handleCalculatedVariables = function(server_data, 
     //kill death ratio, time as titan, etc
     current_progress.rnk = this.getRankFromScore(current_progress.crpt);
 
-    var diff = current_progress.klls - current_progress.dths;
+    var kills_diff = current_progress.klls - current_progress.dths;
     if(current_progress.dths > 0) {
-        if(diff > 0) {
+        if(kills_diff > 0) {
             current_progress.kdr = current_progress.klls / current_progress.dths;
         } else {
             current_progress.kdr = -(current_progress.dths / current_progress.klls);
         }
-        
+        var start_time = parseFloat(server_data["mapstart"]);
+        var end_time = parseFloat(server_data["mapend"]);
+
+        current_progress.ttp = Math.floor(end_time-start_time);
     }
         
     return current_progress;

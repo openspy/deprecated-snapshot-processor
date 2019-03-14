@@ -36,7 +36,12 @@ function PlayerProgressProcessor(DbCtx, database, options) {
 }
 PlayerProgressProcessor.prototype.processSnapshot = function(server_data, player_snapshot_data) {
     return new Promise(async function(resolve, reject) {
+        let pid = parseInt(player_snapshot_data.pid);
+        if(isNaN(pid)) return resolve();
         await this.ProcessScore(server_data, player_snapshot_data);
+        await this.ProcessPoint(server_data, player_snapshot_data);
+        await this.ProcessKills(server_data, player_snapshot_data);
+        await this.ProcessTotalTimePlayed(server_data, player_snapshot_data);
         resolve();
     }.bind(this));
 };
@@ -63,31 +68,149 @@ PlayerProgressProcessor.prototype.CreateProgressKey = function(profileid, key) {
 PlayerProgressProcessor.prototype.ProcessScore = function(server_data, player_snapshot_data) {
     return new Promise(async function(resolve, reject) {
         
-        var profileid = parseInt(player_snapshot_data.pid);
+        let profileid = parseInt(player_snapshot_data.pid);
         //var latest = await this.getMostRecentProgressData(profileid, "scores");
-        var mapTime = Math.floor(parseFloat(server_data.mapend));
-        var mTime = moment.unix(mapTime).startOf('day').unix();
+        let mapTime = Math.floor(parseFloat(server_data.mapend));
+        let mTime = moment.unix(mapTime).startOf('day').unix();
 
-        var key = "score";
+        let key = "score";
         await this.CreateProgressKey(profileid, key);
 
-        var gsco = parseInt(player_snapshot_data.gsco);
+        let gsco = parseInt(player_snapshot_data.gsco);
         if(isNaN(gsco)) return resolve();
-        var nearest = await this.getLatestProgressBeforeDateRange(profileid, key, mapTime);
+        let nearest = await this.getLatestProgressBeforeDateRange(profileid, key, mTime);
         if(nearest && nearest.date == mTime) {
             //update date
             //profileid, key, date, set_data
             nearest.score += gsco;
-            await this.updateProgressByDate(profileid, key, nearest.date, nearest);
+            await this.updateProgressByDate(profileid, key, mTime, nearest);
             
         } else {
             //insert new date, with old score to increment off of
-            var score  = 0;
+            let score  = 0;
             if(nearest && nearest.score) {
                 score = nearest.score;
             }
             score += gsco;
-            var data = {date: mTime, score: score};
+            let data = {date: mTime, score: score};
+            await this.setNewProgressEntry(profileid, key, data)
+        }
+        await this.reduceProgressEntries(profileid, key, 35);
+        resolve();
+    }.bind(this));
+}
+
+PlayerProgressProcessor.prototype.ProcessPoint = function(server_data, player_snapshot_data) {
+    return new Promise(async function(resolve, reject) {
+        
+        let profileid = parseInt(player_snapshot_data.pid);
+        //var latest = await this.getMostRecentProgressData(profileid, "scores");
+        let mapTime = Math.floor(parseFloat(server_data.mapend));
+        let mTime = moment.unix(mapTime).startOf('day').unix();
+
+        let key = "point";
+        await this.CreateProgressKey(profileid, key);
+
+        let gsco = parseInt(player_snapshot_data.gsco);
+        let experiencepoints = parseInt(player_snapshot_data.crpt);
+        if(isNaN(gsco)) return resolve();
+        let nearest = await this.getLatestProgressBeforeDateRange(profileid, key, mTime);
+
+        if(nearest && nearest.date == mTime) {
+            //update date
+            //profileid, key, date, set_data
+            nearest.globalscore += gsco;
+            nearest.points += (gsco + experiencepoints);
+            nearest.experiencepoints += experiencepoints;
+            await this.updateProgressByDate(profileid, key, mTime, nearest);
+            
+        } else {
+            //insert new date, with old score to increment off of
+            let data = {date: mTime, globalscore: 0, points: 0, experiencepoints: 0, awaybonus: 0};
+            if(nearest && !isNaN(nearest.points)) {
+                data = nearest;
+            }
+            data.date = mTime;
+            data.globalscore += gsco;
+            data.points += (gsco + experiencepoints);
+            data.experiencepoints += experiencepoints;
+            
+            await this.setNewProgressEntry(profileid, key, data)
+        }
+        await this.reduceProgressEntries(profileid, key, 35);
+        resolve();
+    }.bind(this));
+}
+
+PlayerProgressProcessor.prototype.ProcessTotalTimePlayed = function(server_data, player_snapshot_data) {
+    return new Promise(async function(resolve, reject) {
+        
+        let profileid = parseInt(player_snapshot_data.pid);
+        let mapTime = Math.floor(parseFloat(server_data.mapend));
+        let mTime = moment.unix(mapTime).startOf('day').unix();
+
+        let key = "ttp";
+        await this.CreateProgressKey(profileid, key);
+
+        let start_time = parseFloat(server_data["mapstart"]);
+        let end_time = parseFloat(server_data["mapend"]);
+
+        let ttp = Math.floor(end_time-start_time);
+
+        if(isNaN(ttp)) return resolve();
+        let nearest = await this.getLatestProgressBeforeDateRange(profileid, key, mTime);
+        if(nearest && nearest.date == mTime) {
+            //update date
+            //profileid, key, date, set_data
+            nearest.ttp += ttp;
+            await this.updateProgressByDate(profileid, key, nearest.date, nearest);
+            
+        } else {
+            //insert new date, with old score to increment off of
+            let data = {date: mTime, ttp: 0};
+            if(nearest && !isNaN(nearest.ttp)) {
+                data = nearest;
+            }
+            data.date = mTime;
+            data.ttp = ttp;
+            
+            await this.setNewProgressEntry(profileid, key, data)
+        }
+        await this.reduceProgressEntries(profileid, key, 35);
+        resolve();
+    }.bind(this));
+}
+PlayerProgressProcessor.prototype.ProcessKills = function(server_data, player_snapshot_data) {
+    return new Promise(async function(resolve, reject) {
+        
+        let profileid = parseInt(player_snapshot_data.pid);
+        let mapTime = Math.floor(parseFloat(server_data.mapend));
+        let mTime = moment.unix(mapTime).startOf('day').unix();
+
+        let key = "kills";
+        await this.CreateProgressKey(profileid, key);
+
+        let kills = parseInt(player_snapshot_data.klls);
+        let deaths = parseInt(player_snapshot_data.dths);
+        if(isNaN(kills) || isNaN(deaths)) return resolve();
+        let nearest = await this.getLatestProgressBeforeDateRange(profileid, key, mTime);
+        if(nearest && nearest.date == mTime) {
+            //update date
+            //profileid, key, date, set_data
+            nearest.kpm += kills;
+            nearest.dpm += deaths;
+            await this.updateProgressByDate(profileid, key, nearest.date, nearest);
+            
+        } else {
+            //insert new date, with old score to increment off of
+            let data = {date: mTime, kpm: 0, dpm: 0};
+            if(nearest && !isNaN(nearest.kpm)) {
+                data = nearest;
+            }
+            data.date = mTime;
+            data.kpm += kills;
+            data.dpm += deaths;
+            
             await this.setNewProgressEntry(profileid, key, data)
         }
         await this.reduceProgressEntries(profileid, key, 35);
@@ -135,7 +258,7 @@ PlayerProgressProcessor.prototype.getLatestProgressWithinDateRange = function(pr
 
 PlayerProgressProcessor.prototype.getLatestProgressBeforeDateRange = function(profileid, key, maxDate) {
     return new Promise(function(resolve, reject) {
-        var array_key = "$data." + key;
+        let array_key = "$data." + key;
         this.player_progress_collection.aggregate(
             [{$match: {"gameid": this.options.gameid, "profileid": profileid, "pageKey": this.pageKey}}, 
             {$project: {"progressData": 
@@ -170,18 +293,18 @@ PlayerProgressProcessor.prototype.updateProgressByDate = function(profileid, key
     return new Promise(function(resolve, reject) {
         
 
-        var element_key = "data." + key;
-        var set_key = element_key + ".$";
-        var raw_set_data = {};
+        let element_key = "data." + key;
+        let set_key = element_key + ".$";
+        let raw_set_data = {};
         raw_set_data[set_key] = set_data;
 
 
 
-        var search_key = element_key + ".date";
-        var push_data = {};
+        let search_key = element_key + ".date";
+        let push_data = {};
 
         push_data[element_key] = set_data;
-        var searchParams = {gameid: this.options.gameid, profileid: profileid, pageKey: this.pageKey};
+        let searchParams = {gameid: this.options.gameid, profileid: profileid, pageKey: this.pageKey};
         searchParams[search_key] = date;
         this.player_progress_collection.updateOne(searchParams,
         {$set: raw_set_data}, function(result, err) {
@@ -193,8 +316,8 @@ PlayerProgressProcessor.prototype.updateProgressByDate = function(profileid, key
 PlayerProgressProcessor.prototype.setNewProgressEntry = function(profileid, key, data) {
     
     return new Promise(function(resolve, reject) {
-        var element_key = "data." + key;
-        var push_data = {};
+        let element_key = "data." + key;
+        let push_data = {};
         push_data[element_key] = data;
         this.player_progress_collection.updateOne({gameid: this.options.gameid, profileid: profileid, pageKey: this.pageKey},
         {$push: push_data}, function(result, err) {
@@ -217,7 +340,7 @@ PlayerProgressProcessor.prototype.reduceProgressEntries = function(profileid, ke
                 if(!minimized_data) {
                     return reject();
                 }
-                var set_data = {};
+                let set_data = {};
                 set_data[element_key] = minimized_data.items;
                 this.player_progress_collection.updateOne({"gameid": this.options.gameid, "profileid": profileid, "pageKey": this.pageKey}, {$set: set_data}, function(err, results) {
                     resolve();
