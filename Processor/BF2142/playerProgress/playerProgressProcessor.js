@@ -298,7 +298,7 @@ PlayerProgressProcessor.prototype.ProcessRoles = function(server_data, player_sn
             nearest.sltime += sltime;
             nearest.lwtime += lwtime;
             nearest.smtime += smtime;
-            nearest.ttp += ttp;
+            
 
             if(reduce.cotime)
                 nearest.cotime /= 2;
@@ -308,6 +308,8 @@ PlayerProgressProcessor.prototype.ProcessRoles = function(server_data, player_sn
                 nearest.lwtime /= 2;
             if(reduce.smtime)
                 nearest.smtime /= 2;
+
+            nearest.ttp = (nearest.smtime + nearest.lwtime + nearest.sltime + nearest.cotime);
                 
             await this.updateProgressByDate(profileid, key, nearest.date, nearest);
             
@@ -329,7 +331,6 @@ PlayerProgressProcessor.prototype.ProcessRoles = function(server_data, player_sn
             data.sltime = sltime;
             data.lwtime = lwtime;
             data.smtime = smtime;
-            data.ttp = ttp;
 
             
             if(reduce.cotime)
@@ -340,6 +341,8 @@ PlayerProgressProcessor.prototype.ProcessRoles = function(server_data, player_sn
                 data.smtime /= 2;
             if(reduce.lwtime)
                 data.lwtime /= 2;
+
+            data.ttp = (data.smtime + data.lwtime + data.sltime + data.cotime);
             
             await this.setNewProgressEntry(profileid, key, data)
         }
