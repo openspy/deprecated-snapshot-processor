@@ -436,20 +436,20 @@ PlayerProgressProcessor.prototype.ProcessAccuracy = function(server_data, player
             nearest.toth += toth;
             nearest.tots += tots;
             if(toth > 0 && tots > 0)
-                nearest.ovaccu = toth / tots;
+                nearest.waccu = toth / tots;
 
             await this.updateProgressByDate(profileid, key, nearest.date, nearest);
             
         } else {
             //insert new date, with old score to increment off of
-            let data = {date: mTime, toth: 0, tots: 0, ovaccu: 0};
-            if(nearest && !isNaN(nearest.toth) && !isNaN(nearest.tots) && ! isNaN(nearest.ovaccu)) {
+            let data = {date: mTime, toth: 0, tots: 0, waccu: 0};
+            if(nearest && !isNaN(nearest.toth) && !isNaN(nearest.tots) && ! isNaN(nearest.waccu)) {
                 data = nearest;
             }
             data.toth = toth;
             data.tots = tots;
             if(toth > 0 && tots > 0)
-                data.ovaccu = toth / tots;
+                data.waccu = toth / tots;
             data.date = mTime;
 
             await this.setNewProgressEntry(profileid, key, data)
