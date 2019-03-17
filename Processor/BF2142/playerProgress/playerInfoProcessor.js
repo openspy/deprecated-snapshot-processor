@@ -5,9 +5,6 @@ function PlayerInfoProcessor(DbCtx, database, options) {
     this.database = database;    
     this.playerRecordModel = new PlayerRecordModel(DbCtx, database, options);    
 
-    this.NUM_VEHICLES = 16;
-    this.NUM_WEAPONS = 49;
-
     this.playerProgressGreaterKeys = [
         //"rnk", //maybe remove
         "dstrk", //#> => Worst Death Streak
@@ -71,6 +68,7 @@ function PlayerInfoProcessor(DbCtx, database, options) {
         "ktt-1",   //+ => Time As Assault
         "ktt-2",   //+ => Time As Engineer
         "ktt-3",   //+ => Time As Support
+        "etp-3", //+ => Time cloaked
     ]
 }
 PlayerInfoProcessor.prototype.processPlayerInfo = function(server_data, player_snapshot_data) {
@@ -132,7 +130,7 @@ PlayerInfoProcessor.prototype.handleVehicleStats = function(server_data, player_
         "vbf",
         "vbh",
     ];
-    for(var i = 0;i<=this.NUM_VEHICLES;i++) {
+    for(var i = 0;i<=this.options.NUM_VEHICLES;i++) {
         if(inc_keys.indexOf(x) !== -1) {
             var key = "vtp-" + i;
             if(player_snapshot_data[key] != undefined)  {
@@ -180,7 +178,7 @@ PlayerInfoProcessor.prototype.handleWeaponStats = function(server_data, player_s
         "wbf",
         "wbh"
     ];
-    for(var i =0;i<this.NUM_WEAPONS;i++) {
+    for(var i =0;i<this.options.NUM_WEAPONS;i++) {
         for(var x = 0;x<inc_keys.length;x++) {
             var key = inc_keys[x] + "-" + i;
 
@@ -332,6 +330,15 @@ PlayerInfoProcessor.prototype.handleCalculatedVariables = function(server_data, 
     if(current_progress["acdt"] == undefined) {
         current_progress.acdt = Math.floor(start_time); ///XXX: pull create time from db
     }
+
+    
+    //fgm - fav gamemode
+    ///fm - fav map
+    //fv - fav vehicle
+    //fw - fav weapon
+    //fe - fav equipment
+    //fk - fav kit
+    //etp-3 time cloaked
 
     return current_progress;
 }

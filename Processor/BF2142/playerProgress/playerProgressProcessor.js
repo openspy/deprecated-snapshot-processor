@@ -486,7 +486,7 @@ PlayerProgressProcessor.prototype.ProcessWinLosses = function(server_data, playe
         } else {
             //insert new date, with old score to increment off of
             let data = {date: mTime, wins: 0, losses: 0};
-            if(nearest && !isNaN(nearest.spm)) {
+            if(nearest && !isNaN(nearest.wins) && !isNaN(nearest.losses)) {
                 data = nearest;
             }
             if(is_win) {

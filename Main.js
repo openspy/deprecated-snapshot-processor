@@ -226,8 +226,9 @@ function setupBF2142Processor(ctx, database) {
         {awardKey: "323", rules: ["7,164,vdstry-15,4", "7,165,vdstry-14,2", "7,166,vdths-15,5", "7,167,vdths-14,5"]},
         {awardKey: "416", rules: ["6,168, ,"]}
     ];
-
-    Processors.push(new BF2142Processor(ctx, database, {gameid: 1324, scoreSettings, awardSettings}));
+    var NUM_VEHICLES = 16;
+    var NUM_WEAPONS = 49;
+    Processors.push(new BF2142Processor(ctx, database, {gameid: 1324, scoreSettings, awardSettings, NUM_VEHICLES, NUM_WEAPONS}));
 }
 async function doPlayerProgressDebug(ctx, database) {
     var scoreSettings = [
