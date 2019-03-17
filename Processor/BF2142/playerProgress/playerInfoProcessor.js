@@ -19,22 +19,26 @@ function PlayerInfoProcessor(DbCtx, database, options) {
 		"crpt",     //+ => Career Points
 		"cs",       //+ => Commander Score
 		"dass",     //+ => Driver Assists
-		"dcpt",     //+ => Defended Control Points			
+        "dcpt",     //+ => Defended Control Points			
+        "dmst",     //+ => Defended Missle Silos
 		"dths",     //+ => Deaths
 		"gsco",     //+ => Global Score
 		"hls",      //+ => Heals
 		"kick",     //+ => total kicks from servers
 		"klla",     //+ => Kill Assists
-		"klls",     //+ => Kills			
+        "klls",     //+ => Kills			
+        "klse",     //+ => Kills With Explosion?
 		"kluav",    //+ => Kills With Gun Drone
-		"ncpt",     //+ => Neutralized CPs
+        "ncpt",     //+ => Neutralized CPs
+        "nmst",     //+ => Neutralized Missle Silos
 		//"pdt",      //+ => Unique Dog Tags Collected
 		//"pdtc",     //+ => Dog Tags Collected
 		"resp",     //+ => Re-supplies
 		"rps",      //+ => Repairs
 		"rvs",      //+ => Revives
 		"slbspn",   //+ => Spawns On Squad Beacons
-		"sluav",    //+ => Spawn Dron Deployed
+        "sluav",    //+ => Spawn Dron Deployed
+        "slpts",    //+ => Points from SLS Beacon ??
 		"suic",     //+ => Suicides
 		"tac",      //+ => Time As Commander
 		"talw",     //+ => Time As Lone Wolf
@@ -95,19 +99,23 @@ PlayerInfoProcessor.prototype.processPlayerInfo = function(server_data, player_s
                     progress.data[key] = 0;
                 }
                 var value = parseFloat(player_snapshot_data[key]);
-                if(progress.data[key] > value)
-                progress.data[key] = value;
+                if(value > progress.data[key])
+                    progress.data[key] = value;
             }
 
             progress.data = this.handleVehicleStats(server_data, player_snapshot_data, progress.data);
             progress.data = this.handleWeaponStats(server_data, player_snapshot_data, progress.data);
             progress.data = this.handleCalculatedVariables(server_data, player_snapshot_data, progress.data);
+            this.handleDogTags(server_data, player_snapshot_data, progress.data).then(function(progressData) {
+                progress.data = progressData;
+                progress.nick = player_snapshot_data.nick;
+                progress.profileid = player_snapshot_data.pid;
+                progress.gameid = this.options.gameid;
+                progress.modified = Date.now();
+                this.playerRecordModel.insertOrUpdate(progress).then(resolve, reject);
+            }.bind(this));
     
-            progress.nick = player_snapshot_data.nick;
-            progress.profileid = player_snapshot_data.pid;
-            progress.gameid = this.options.gameid;
-            progress.modified = Date.now();
-            this.playerRecordModel.insertOrUpdate(progress).then(resolve, reject);
+            
         }.bind(this));
 
     }.bind(this));
@@ -147,6 +155,18 @@ PlayerInfoProcessor.prototype.handleVehicleStats = function(server_data, player_
             }
             current_progress[key] += parseFloat(player_snapshot_data[key]);
         }
+        var kills_key = "vkls-" + i;
+        var deaths_key = "vdths-" + i;
+        if(player_snapshot_data[kills_key] !== undefined && player_snapshot_data[deaths_key] !== undefined) {            
+            var current_kills = parseInt(player_snapshot_data[kills_key]);
+            var total_kills = parseInt(player_snapshot_data[kills_key]) + current_kills;
+
+            
+            var current_deaths = parseInt(player_snapshot_data[deaths_key]);
+            var total_deaths = parseInt(player_snapshot_data[deaths_key]) + current_deaths;
+
+            current_progress[("vkdr-" + i)] = total_kills / total_deaths;
+        }
     }
     return current_progress;
 
@@ -174,18 +194,27 @@ PlayerInfoProcessor.prototype.handleWeaponStats = function(server_data, player_s
             current_progress[key] += parseFloat(player_snapshot_data[key]);
         }
 
-        var key = "waccu-" + i;
-        if(current_progress[key] == undefined) {
-            current_progress[key] = 0;
-        }
-        if(player_snapshot_data[key] !== undefined) {
-            if(current_progress[key] == 0) {
-                current_progress[key] = parseFloat(player_snapshot_data[key]);
-            } else {
-                current_progress[key] *= parseFloat(player_snapshot_data[key]);
-            }
-            
-        }
+        var accu_key = "waccu-" + i;
+        var hit_key = "wbh-" + i;
+        var fired_key = "wbf-"+i;
+        var current_hit = parseInt(player_snapshot_data[hit_key]);
+        var total_hit = parseInt(current_progress[hit_key]) + current_hit;
+
+        var current_fired = parseInt(player_snapshot_data[fired_key]);
+        var total_fired = parseInt(current_progress[fired_key]) + current_fired;
+        if(total_hit > 0 && total_fired > 0)
+            current_progress[accu_key] = (total_hit / total_fired);
+        
+        var kills_key = "wkls-" + i;
+        var current_kills = parseInt(player_snapshot_data[kills_key]);
+        var total_kills = parseInt(current_progress[kills_key]) + current_kills;
+
+        var deaths_key = "wdths-" + i;
+        var current_deaths = parseInt(player_snapshot_data[deaths_key]);
+        var total_deaths = parseInt(current_progress[deaths_key]) + current_deaths;
+
+        if(total_kills > 0 && total_deaths > 0)
+            current_progress[("wkdr-" + i)] = total_kills / total_deaths;
     }
     return current_progress;
 }
@@ -212,12 +241,142 @@ PlayerInfoProcessor.prototype.handleCalculatedVariables = function(server_data, 
         } else {
             current_progress.kdr = -(current_progress.dths / current_progress.klls);
         }
-        var start_time = parseFloat(server_data["mapstart"]);
-        var end_time = parseFloat(server_data["mapend"]);
-
-        current_progress.ttp = Math.floor(end_time-start_time);
     }
-        
+
+    var start_time = parseFloat(server_data["mapstart"]);
+    var end_time = parseFloat(server_data["mapend"]);
+
+    current_progress.lgdt = Math.floor(end_time);
+    current_progress.ttp = Math.floor(end_time-start_time);
+
+    var gamemode = parseInt(server_data["gm"]);
+    var cs = parseInt(player_snapshot_data["cs"]);
+    var tac = parseInt(player_snapshot_data["tac"]);
+
+    if(current_progress["trp"] == null) {
+        current_progress["trp"] = 0;
+    }
+
+    //command score (per gamemode), time as commander
+    switch(gamemode) {
+        case 0: //conquest
+        if(current_progress["csgpm-0"] == null)
+            current_progress["ctgpm-0"] = 0;
+            if(current_progress["ctgpm-0"] == null)
+            current_progress["csgpm-0"] = 0;
+        current_progress["csgpm-0"] += cs;
+        current_progress["ctgpm-0"] += tac;
+        break;
+        case 1: //titan
+        if(current_progress["csgpm-1"] == null)
+            current_progress["csgpm-1"] = 0;
+            if(current_progress["ctgpm-1"] == null)
+            current_progress["ctgpm-1"] = 0;
+        current_progress["csgpm-1"] += cs;
+        current_progress["ctgpm-1"] += tac;
+        current_progress["trp"]++;
+        break;
+    }
+
+    var gsco = parseInt(current_progress.gsco);
+
+    //score per min
+    current_progress.spm = (gsco / current_progress.ttp) / 60;
+
+    var toth = parseInt(current_progress["toth"]);
+    var tots = parseInt(current_progress["tots"]);
+    current_progress.ovaccu = toth / tots;
+
+    var winning_team = parseInt(server_data["win"]);
+    var team = parseInt(player_snapshot_data["t"]);
+
+    if(current_progress.win == null) {
+        current_progress.win = 0;
+    }
+    if(current_progress.los == null) {
+        current_progress.los = 0;
+    }
+    if(current_progress["attp-0"] == null) {
+        current_progress["attp-0"] = 0;
+    }
+    if(current_progress["attp-1"] == null) {
+        current_progress["attp-1"] = 0;
+    }
+
+    var player_won = winning_team == team;
+
+    switch(team) {
+        case 1: //PAC
+           current_progress["attp-1"] = player_won ? current_progress["attp-1"]+1 : current_progress["attp-1"]-1;
+           break;
+        case 2: //EU
+            current_progress["attp-0"] = player_won ? current_progress["attp-0"]+1 : current_progress["attp-0"]-1;
+           break;   
+    }
+
+    if(player_won) {
+        current_progress.win++;
+    } else {
+        current_progress.los++;
+    }
+
+    if(current_progress.win > 0 && current_progress.los > 0)
+        current_progress.wlr = current_progress.win / current_progress.los;
+    
+    //best round score
+    var brs = current_progress.brs || 0;
+    if(gsco > brs) {
+        brs = gsco;
+    }
+
+    if(current_progress["acdt"] == undefined) {
+        current_progress.acdt = Math.floor(start_time); ///XXX: pull create time from db
+    }
+
     return current_progress;
+}
+PlayerInfoProcessor.prototype.handleDogTags = function(server_data, player_snapshot_data, current_progress) {
+    return new Promise(function(resolve, reject) {
+        if(player_snapshot_data["pdt"] !== undefined) {
+            var pageKey = "player_dogtags";
+            return this.playerRecordModel.fetch({pageKey, gameid: this.options.gameid, profileid: player_snapshot_data.pid}).then(function(dogtags) {
+                var dogtagsData = dogtags || {};
+                dogtagsData.pageKey = pageKey;
+                dogtagsData.gameid = this.options.gameid;
+                dogtagsData.profileid = player_snapshot_data.pid;
+                if(dogtagsData.data == undefined)
+                    dogtagsData.data = {};
+                
+                var total_dogtags = 0, total_unique = 0;
+                var snapshotDogtags = player_snapshot_data["pdt"];
+                var keys = Object.keys(snapshotDogtags);
+                for(var i =0;i<keys.length;i++) {
+                    var key = keys[i];
+                    if(dogtagsData.data[key] === undefined) {
+                        dogtagsData.data[key] = snapshotDogtags[key];
+                        total_unique++;
+                    } else {
+                        dogtagsData.data[key].count += snapshotDogtags[key].count;
+                        dogtagsData.data[key].nick = snapshotDogtags[key].nick;
+                    }
+                    total_dogtags += snapshotDogtags[key].count;
+                }
+
+                return this.playerRecordModel.insertOrUpdate(dogtagsData).then(function(results) {
+                    if(isNaN(current_progress.pdt)) {
+                        current_progress.pdt = 0;
+                   }
+                   if(isNaN(current_progress.pdtc)) {
+                    current_progress.pdtc = 0;
+               }
+                   current_progress.pdt += total_unique;
+                   current_progress.pdtc += total_dogtags;
+                   return resolve(current_progress);
+                });
+            }.bind(this));
+        } else {
+            return resolve();
+        }
+    }.bind(this));
 }
 module.exports = PlayerInfoProcessor;

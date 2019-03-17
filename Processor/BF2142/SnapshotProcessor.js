@@ -14,7 +14,27 @@ SnapshotProcessor.prototype.processSnapshots = function(snapshots) {
         resolve();
     }.bind(this));
 };
+SnapshotProcessor.prototype.getDogtags = function(player_num, snapshot) {
+    var key = "pdt_" + player_num;
+    if(snapshot[key] == undefined) return {};
+    var dogtag_data = snapshot[key].replace('{', '[').replace('}', ']').replace(/:/g, ',');
+    var dogtags = JSON.parse(dogtag_data);
+    var output = {};
+    if(dogtags.length > 0) {
+        for(var i=0;i<dogtags.length;i+=2) {
+            var profileid_key = "pid_" + (dogtags[i]);
+            var nick_key = "nick_" + dogtags[i];
+            var profileid = parseInt(snapshot[profileid_key]);
+            var dogtag = {};
+            dogtag.profileid = profileid;
+            dogtag.nick = snapshot[nick_key];
+            dogtag.count = dogtags[i+1];
+            output[profileid.toString()] = dogtag;
+        }
+    }
 
+    return output;
+}
 SnapshotProcessor.prototype.processSnapshot = function(snapshot) {
     return new Promise(async function(resolve, reject) {
         if(!snapshot || !snapshot.updates || snapshot.updates.length != 1) {
@@ -50,6 +70,7 @@ SnapshotProcessor.prototype.processSnapshot = function(snapshot) {
         let player_progress_promises = [];
         for(let i=0;i<num_players;i++) {
             player_variables[i].pid = parseInt(player_variables[i].pid);
+            player_variables[i].pdt = this.getDogtags(i, game_data);
             player_progress_promises.push(this.playerRecordProcessor.processRecord(server_variables, player_variables[i]));
         }
         return Promise.all(player_progress_promises).then(function(results) {
