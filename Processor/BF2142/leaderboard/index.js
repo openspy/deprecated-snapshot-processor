@@ -4,8 +4,6 @@ function LeaderboardProcessor(DbCtx, database, options) {
     this.options = options;
     this.DbCtx = DbCtx;
     this.database = database;    
-    this.ITEMS_PER_PAGE = 17;
-    this.MAX_ITEMS = 1000;
     this.player_progress_collection = database.collection('player_progress');
 }
 
@@ -194,24 +192,18 @@ LeaderboardProcessor.prototype.calculateVehicleStats = function(vehicle_index) {
 }
 LeaderboardProcessor.prototype.updateLeaderboard = async function(baseKey, data, id_key) {
     var total_players = data.length;
-    var current_offset = 1;
     if(id_key !== undefined)
         baseKey += ("_" + id_key);
-    var current_page = {pageKey: baseKey + "_" + current_offset, gameid: this.options.gameid, data: [], baseKey: baseKey};
+    var current_page = {gameid: this.options.gameid, data: [], baseKey: baseKey};
     await this.leaderboardModel.deleteMany({baseKey, gameid: this.options.gameid});
     for(var i =0;i<total_players;i++) {
         data[i].rank = i+1;
         current_page.data.push(data[i]);
         if(current_page.data.length > this.ITEMS_PER_PAGE) {
-            await this.leaderboardModel.insertOrUpdate(current_page);
-            current_offset += this.ITEMS_PER_PAGE;
-            current_page = {pageKey: baseKey + "_" + current_offset, gameid: this.options.gameid, data: [], baseKey: baseKey};
-            
+            current_page = {gameid: this.options.gameid, data: [], baseKey: baseKey};
         }
     }
-    if(current_page.data.length > 0) {
-        await this.leaderboardModel.insertOrUpdate(current_page);
-    }
+    await this.leaderboardModel.insertOrUpdate(current_page);
 }
 
 LeaderboardProcessor.prototype.setOptionsLeaderboard = function() {
