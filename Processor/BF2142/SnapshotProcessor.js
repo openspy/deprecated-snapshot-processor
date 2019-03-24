@@ -53,7 +53,7 @@ SnapshotProcessor.prototype.processSnapshot = function(snapshot) {
         for(let i=0;i<num_players;i++) {
             player_variables[i] = {};
         }
-        let server_variables = {};
+        let server_variables = {ip: snapshot.ip};
         let obj_keys = Object.keys(game_data);
         for(let i =0;i<obj_keys.length;i++) {
             let match = obj_keys[i].match(/_\d+$/);

@@ -226,28 +226,61 @@ function setupBF2142Processor(ctx, database) {
         {awardKey: "323", rules: ["7,164,vdstry-15,4", "7,165,vdstry-14,2", "7,166,vdths-15,5", "7,167,vdths-14,5"]},
         {awardKey: "416", rules: ["6,168, ,"]}
     ];
+
+    awardSettings = [
+        {awardKey: "400", rules: ["6,48, ,3", "6,49, ,1", "1,48,tcd,40"]},
+        {awardKey: "401", rules: ["1,59, 15,0.5"]},
+        {awardKey: "119_1", rules: ["6,48, ,2"]},
+        {awardKey: "119_2", rules: ["6,49, ,1", "1,48,tcd,10"]},
+        {awardKey: "119_3", rules: ["6,48, ,3", "6,49, ,1", "1,48,tcd,40"]}
+    ];
+
+    var award_criteria = {
+        "5": {
+            variables: ["wkls-12"]
+        },
+        "85": {
+            type: "score_variable",
+            variables: ["kdr"]
+        },
+        "119": {
+            type: "score_variable",
+            variables: ["wins"]
+        },
+        "48": {
+            type: "score_variable",
+            variables: ["tcd"]
+        },
+        "49": {
+            type: "score_variable",
+            variables: ["tcrd"]
+        },
+        "59": {
+            type: "has_award",
+            award_name: "401"
+        }
+    };
+
     var NUM_VEHICLES = 16;
     var NUM_WEAPONS = 49;
-    Processors.push(new BF2142Processor(ctx, database, {gameid: 1324, scoreSettings, awardSettings, NUM_VEHICLES, NUM_WEAPONS}));
+    Processors.push(new BF2142Processor(ctx, database, {gameid: 1324, scoreSettings, awardSettings, NUM_VEHICLES, NUM_WEAPONS, awardVariableMapping: award_criteria}));
 }
 async function doPlayerProgressDebug(ctx, database) {
     var scoreSettings = [
         {rank: 1, minScore: 40}
     ];
     var awardSettings = [
-        {awardKey: "100_1", rules: ["9,23,ktt-3,54000", "6,1, ,20", "6,168, ,"]}
+        {awardKey: "400", rules: ["1,85, 15,0.5"]},
+        {awardKey: "401", rules: ["1,59, 15,0.5"]},
     ];
 
+
     var processor = new BF2142Processor(ctx, database, {gameid: 1324, scoreSettings, awardSettings})
-    /*
-                nearest.globalscore += gsco;
-            nearest.points += (gsco + experiencepoints);
-            nearest.experiencepoints += experiencepoints;
-     */
 
     await processor.snapshotProcessor.playerRecordProcessor.playerProgressProcessor.processSnapshot({hostname: "hello", mapend: "1572021200"}, {gsco: 100, pid: 123, crpt: 12});
     await processor.snapshotProcessor.playerRecordProcessor.playerProgressProcessor.processSnapshot({hostname: "hello", mapend: "1572021200"}, {gsco: 666, pid: 123, crpt: 12});
     await processor.snapshotProcessor.playerRecordProcessor.playerProgressProcessor.processSnapshot({hostname: "hello", mapend: "1572021200"}, {gsco: 11, pid: 123, crpt: 12});
+    await processor.calculateLeaderboard();
     //await processor.snapshotProcessor.playerRecordProcessor.playerProgressProcessor.processSnapshot({hostname: "hello", mapend: "1573321300"}, {gsco: 100, pid: 123, crpt: 12});
 }
 DbCtx.getDatabaseCtx().then(async function(ctx) {

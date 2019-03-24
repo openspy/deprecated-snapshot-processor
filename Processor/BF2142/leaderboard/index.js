@@ -212,9 +212,11 @@ LeaderboardProcessor.prototype.setOptionsLeaderboard = function() {
 
         leaderboard_data.baseKey = "settings";
         leaderboard_data.pageKey = "settings";
-        leaderboard_data.data  = {};
-        leaderboard_data.data.scores = this.options.scoreSettings;
-        leaderboard_data.data.awards = this.options.awardSettings;
+        
+        var settings = {}
+        settings.scores = this.options.scoreSettings;
+        settings.awards = this.options.awardSettings;
+        leaderboard_data.data  = [settings];
 
         await this.leaderboardModel.insertOrUpdate(leaderboard_data);
         resolve();
