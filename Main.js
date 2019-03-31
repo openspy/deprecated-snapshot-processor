@@ -227,25 +227,194 @@ function setupBF2142Processor(ctx, database) {
         {awardKey: "416", rules: ["6,168, ,"]}
     ];
 
-    awardSettings = [
-        {awardKey: "400", rules: ["6,48, ,3", "6,49, ,1", "1,48,tcd,40"]},
-        {awardKey: "401", rules: ["1,59, 15,0.5"]},
-        {awardKey: "119_1", rules: ["6,48, ,2"]},
-        {awardKey: "119_2", rules: ["6,49, ,1", "1,48,tcd,10"]},
-        {awardKey: "119_3", rules: ["6,48, ,3", "6,49, ,1", "1,48,tcd,40"]}
-    ];
-
     var award_criteria = {
+        "1": {
+            type: "score_variable",
+            variables: ["kkls-3"]
+        },
+        "2": {
+            type: "score_variable",
+            variables: ["kkls-0"]
+        },
+        "3": {
+            type: "score_variable",
+            variables: ["kkls-1"]
+        },
+        "4": {
+            type: "score_variable",
+            variables: ["kkls-2"]
+        },
         "5": {
+            type: "score_variable",
             variables: ["wkls-12"]
         },
-        "85": {
+        "6": {
             type: "score_variable",
-            variables: ["kdr"]
+            variables: ["wkls-20"]
         },
-        "119": {
+        "7": {
             type: "score_variable",
-            variables: ["wins"]
+            variables: ["wkls-5","wkls-11"]
+        },
+        "8": {
+            type: "score_variable",
+            variables: ["wkls-21","wkls-23","wkls-24"]
+        },
+        "9": {
+            type: "score_variable",
+            variables: ["vkls-3","vkls-12","wkls-30"]
+        },
+        "10": {
+            type: "score_variable",
+            variables: ["vkls-7"]
+        },
+        "11": {
+            type: "score_variable",
+            variables: ["vkls-0","vkls-1","vkls-2"]
+        },
+        "12": {
+            type: "score_variable",
+            variables: ["vkls-4","vkls-10"]
+        },
+        "13": {
+            type: "score_variable",
+            variables: ["kgpm-0"]
+        },
+        "14": {
+            type: "score_variable",
+            variables: ["kgpm-1"]
+        },
+        "15": {
+            type: "score_variable",
+            variables: ["bksgpm-0"]
+        },
+        "16": {
+            type: "score_variable",
+            variables: ["bksgpm-1"]
+        },
+        "17": {
+            type: "score_variable",
+            variables: ["kgpm-0","kgpm-1"]
+        },
+        "18": {
+            type: "score_variable",
+            variables: ["vtp-3","vtp-12","wtp-30"]
+        },
+        "19": {
+            type: "score_variable",
+            variables: ["tac"]
+        },
+        "20": {
+            type: "score_variable",
+            variables: ["ktt-0"]
+        },
+        "21": {
+            type: "score_variable",
+            variables: ["ktt-1"]
+        },
+        "22": {
+            type: "score_variable",
+            variables: ["ktt-2"]
+        },
+        "23": {
+            type: "score_variable",
+            variables: ["ktt-3"]
+        },
+        "24": {
+            type: "score_variable",
+            variables: ["vtp-0","vtp-1","vtp-2"]
+        },
+        "25": {
+            type: "score_variable",
+            variables: ["vtp-4","vtp-10"]
+        },
+        "26": {
+            type: "score_variable",
+            variables: ["tgpm-0"]
+        },
+        "27": {
+            type: "score_variable",
+            variables: ["tgpm-1"]
+        },
+        "28": {
+            type: "score_variable",
+            variables: ["tasl"]
+        },
+        "29": {
+            type: "score_variable",
+            variables: ["tasm"]
+        },
+        "30": {
+            type: "score_variable",
+            variables: ["tt"]
+        },
+        "31": {
+            type: "score_variable",
+            variables: ["attp-0"]
+        },
+        "32": {
+            type: "score_variable",
+            variables: ["attp-1"]
+        },
+        "33": {
+            type: "score_variable",
+            variables: ["vtp-4"]
+        },
+        "34": {
+            type: "score_variable",
+            variables: ["cs"]
+        },
+        "35": {
+            type: "score_variable",
+            variables: ["cs"]
+        },
+        "36": {
+            type: "score_variable",
+            variables: ["ctgpm-1"]
+        },
+        "37": {
+            type: "score_variable",
+            variables: ["ctgpm-0"]
+        },
+        "38": {
+            type: "score_variable",
+            variables: ["tac"]
+        },
+        "39": {
+            type: "score_variable",
+            variables: ["csgpm-1"]
+        },
+        "40": {
+            type: "score_variable",
+            variables: ["csgpm-0"]
+        },
+        "41": {
+            type: "score_variable",
+            variables: ["twsc"]
+        },
+        "42": {
+            type: "score_variable",
+            variables: ["rps"]
+        },
+        "43": {
+            type: "score_variable",
+            variables: ["hls"]
+        },
+        "44": {
+            type: "score_variable",
+            variables: ["rvs"]
+        },
+        "45": {
+            type: "score_variable",
+            variables: ["resp"]
+        },
+        "46": {
+            type: "score_variable",
+            variables: ["tas"]
+        },
+        "47": {
+            type: "score_variable",
+            variables: ["tds"]
         },
         "48": {
             type: "score_variable",
@@ -255,11 +424,483 @@ function setupBF2142Processor(ctx, database) {
             type: "score_variable",
             variables: ["tcrd"]
         },
+        "50": {
+            type: "score_variable",
+            variables: ["slbspn"]
+        },
+        "51": {
+            type: "score_variable",
+            variables: ["cpt"]
+        },
+        "52": {
+            type: "score_variable",
+            variables: ["dcpt"]
+        },
+        "53": {
+            type: "",
+            variables: []
+        },
+        "54": {
+            type: "score_variable",
+            variables: ["awin-0"]
+        },
+        "55": {
+            type: "score_variable",
+            variables: ["awin-1"]
+        },
+        "56": {
+            type: "score_variable",
+            variables: ["erb"]
+        },
+        "57": {
+            type: "score_variable",
+            variables: ["ers"]
+        },
+        "58": {
+            type: "score_variable",
+            variables: ["erg"]
+        },
         "59": {
             type: "has_award",
-            award_name: "401"
+            variables: ["401"]
+        },
+        "60": {
+            type: "has_award",
+            variables: ["410"]
+        },
+        "61": {
+            type: "has_award",
+            variables: ["402"]
+        },
+        "62": {
+            type: "has_award",
+            variables: ["100_1"]
+        },
+        "63": {
+            type: "has_award",
+            variables: ["101_1"]
+        },
+        "64": {
+            type: "has_award",
+            variables: ["102_1"]
+        },
+        "65": {
+            type: "has_award",
+            variables: ["103_1"]
+        },
+        "66": {
+            type: "has_award",
+            variables: ["105_1"]
+        },
+        "67": {
+            type: "has_award",
+            variables: ["106_1"]
+        },
+        "68": {
+            type: "has_award",
+            variables: ["107_1"]
+        },
+        "69": {
+            type: "has_award",
+            variables: ["100_2"]
+        },
+        "70": {
+            type: "has_award",
+            variables: ["101_2"]
+        },
+        "71": {
+            type: "has_award",
+            variables: ["102_2"]
+        },
+        "72": {
+            type: "has_award",
+            variables: ["103_2"]
+        },
+        "73": {
+            type: "has_award",
+            variables: ["105_2"]
+        },
+        "74": {
+            type: "has_award",
+            variables: ["106_2"]
+        },
+        "75": {
+            type: "has_award",
+            variables: ["107_2"]
+        },
+        "76": {
+            type: "has_award",
+            variables: ["100_3"]
+        },
+        "77": {
+            type: "has_award",
+            variables: ["101_3"]
+        },
+        "78": {
+            type: "has_award",
+            variables: ["102_3"]
+        },
+        "79": {
+            type: "has_award",
+            variables: ["103_3"]
+        },
+        "80": {
+            type: "has_award",
+            variables: ["105_3"]
+        },
+        "81": {
+            type: "has_award",
+            variables: ["106_3"]
+        },
+        "82": {
+            type: "has_award",
+            variables: ["107_3"]
+        },
+        "83": {
+            type: "ior",
+            variables: []
+        },
+        "84": {
+            type: "score_variable",
+            variables: ["tkls"]
+        },
+        "85": {
+            type: "score_variable",
+            variables: ["kdr"]
+        },
+        "86": {
+            type: "score_variable",
+            variables: ["tdrps"]
+        },
+        "87": {
+            type: "score_variable",
+            variables: ["wlr"]
+        },
+        "88": {
+            type: "score_variable",
+            variables: ["bksgpm-0","bksgpm-1"]
+        },
+        "89": {
+            type: "score_variable",
+            variables: ["klstrk"]
+        },
+        "90": {
+            type: "score_variable",
+            variables: ["dstrk"]
+        },
+        "91": {
+            type: "score_variable",
+            variables: ["tvdmg"]
+        },
+        "92": {
+            type: "score_variable",
+            variables: ["tds"]
+        },
+        "93": {
+            type: "score_variable",
+            variables: ["pdtc"]
+        },
+        "94": {
+            type: "score_variable",
+            variables: ["vrkls-1"]
+        },
+        "95": {
+            type: "score_variable",
+            variables: ["vtp-1"]
+        },
+        "96": {
+            type: "score_variable",
+            variables: ["vtp-4"]
+        },
+        "97": {
+            type: "score_variable",
+            variables: ["vtp-7"]
+        },
+        "98": {
+            type: "score_variable",
+            variables: ["vtp-10"]
+        },
+        "99": {
+            type: "score_variable",
+            variables: ["mtt-0-0","mtt-1-0"]
+        },
+        "100": {
+            type: "score_variable",
+            variables: ["mtt-0-1","mtt-1-1"]
+        },
+        "101": {
+            type: "score_variable",
+            variables: ["mtt-0-2","mtt-1-2"]
+        },
+        "102": {
+            type: "score_variable",
+            variables: ["mtt-0-3","mtt-1-3"]
+        },
+        "103": {
+            type: "score_variable",
+            variables: ["mtt-0-4"]
+        },
+        "104": {
+            type: "score_variable",
+            variables: ["mtt-0-5","mtt-1-5"]
+        },
+        "105": {
+            type: "score_variable",
+            variables: ["mtt-0-6"]
+        },
+        "106": {
+            type: "score_variable",
+            variables: ["mtt-0-7"]
+        },
+        "107": {
+            type: "score_variable",
+            variables: ["mtt-0-8"]
+        },
+        "108": {
+            type: "score_variable",
+            variables: ["mtt-0-9"]
+        },
+        "109": {
+            type: "score_variable",
+            variables: ["tgd"]
+        },
+        "110": {
+            type: "score_variable",
+            variables: ["vrkls-0","vrkls-1","vrkls-2","vrkls-4","vrkls-6","vrkls-10","vrkls-11","vrkls-12","vrkls-13","vrkls-14","vrkls-15"]
+        },
+        "111": {
+            type: "score_variable",
+            variables: ["vkls-3","vkls-12","wkls-30"]
+        },
+        "112": {
+            type: "score_variable",
+            variables: ["wkls-20"]
+        },
+        "113": {
+            type: "score_variable",
+            variables: ["slpts"]
+        },
+        "114": {
+            type: "score_variable",
+            variables: ["vtp-0","vtp-1","vtp-2"]
+        },
+        "115": {
+            type: "score_variable",
+            variables: ["vtp-1","vtp-4","vtp-6"]
+        },
+        "116": {
+            type: "score_variable",
+            variables: ["vrkls-1","vrlks-4","vrkls-6"]
+        },
+        "117": {
+            type: "",
+            variables: []
+        },
+        "118": {
+            type: "",
+            variables: []
+        },
+        "119": {
+            type: "score_variable",
+            variables: ["wins"]
+        },
+        "120": {
+            type: "score_variable",
+            variables: ["vtp-8"]
+        },
+        "121": {
+            type: "score_variable",
+            variables: ["vtp-0","vtp-1","vtp-2","vtp-6"]
+        },
+        "122": {
+            type: "score_variable",
+            variables: ["mtt-0-0","mtt-1-0","mtt-0-2","mtt-1-2","mtt-0-4","mtt-0-5","mtt-1-5","mtt-0-9"]
+        },
+        "123": {
+            type: "score_variable",
+            variables: ["mtt-0-1","mtt-1-1","mtt-0-3","mtt-1-3","mtt-0-6","mtt-0-7","mtt-0-8"]
+        },
+        "124": {
+            type: "ior",
+            variables: []
+        },
+        "125": {
+            type: "ior",
+            variables: []
+        },
+        "126": {
+            type: "ior",
+            variables: []
+        },
+        "127": {
+            type: "ior",
+            variables: []
+        },
+        "128": {
+            type: "score_variable",
+            variables: ["etpk-1"]
+        },
+        "129": {
+            type: "score_variable",
+            variables: ["etpk-5"]
+        },
+        "130": {
+            type: "score_variable",
+            variables: ["etpk-6"]
+        },
+        "131": {
+            type: "",
+            variables: []
+        },
+        "132": {
+            type: "",
+            variables: []
+        },
+        "133": {
+            type: "score_variable",
+            variables: ["mbr-1-0","mbr-1-1","mbr-1-2","mbr-1-3","mbr-1-5","mbr-1-10","mbr-1-12"]
+        },
+        "134": {
+            type: "score_variable",
+            variables: ["mbr-0-0","mbr-0-1","mbr-0-2","mbr-0-3","mbr-0-4","mbr-0-5","mbr-0-6","mbr-0-7","mbr-0-8","mbr-0-9"]
+        },
+        "135": {
+            type: "score_variable",
+            variables: ["mtt-1-0","mtt-1-1","mtt-1-2","mtt-1-3","mtt-1-5","mtt-1-10","mtt-1-12"]
+        },
+        "136": {
+            type: "score_variable",
+            variables: ["mtt-0-0","mtt-0-1","mtt-0-2","mtt-0-3","mtt-0-4","mtt-0-5","mtt-0-6","mtt-0-7","mtt-0-8","mtt-0-9"]
+        },
+        "137": {
+            type: "score_variable",
+            variables: ["vtp-12"]
+        },
+        "138": {
+            type: "score_variable",
+            variables: ["vkls-12"]
+        },
+        "139": {
+            type: "ior",
+            variables: []
+        },
+        "140": {
+            type: "",
+            variables: []
+        },
+        "141": {
+            type: "score_variable",
+            variables: ["vtp-0","vtp-1","vtp-2"]
+        },
+        "142": {
+            type: "score_variable",
+            variables: ["vtp-4","vtp-10"]
+        },
+        "143": {
+            type: "score_variable",
+            variables: ["tasl"]
+        },
+        "144": {
+            type: "score_variable",
+            variables: ["tasm"]
+        },
+        "145": {
+            type: "score_variable",
+            variables: ["attp-0"]
+        },
+        "146": {
+            type: "score_variable",
+            variables: ["attp-1"]
+        },
+        "147": {
+            type: "score_variable",
+            variables: ["vtp-10"]
+        },
+        "148": {
+            type: "score_variable",
+            variables: ["vtp-3","vtp-12","wtp-30"]
+        },
+        "149": {
+            type: "score_variable",
+            variables: ["ctgpm-1"]
+        },
+        "150": {
+            type: "score_variable",
+            variables: ["ctgpm-0"]
+        },
+        "151": {
+            type: "score_variable",
+            variables: ["vtp-1","vtp-4","vtp-6"]
+        },
+        "152": {
+            type: "",
+            variables: []
+        },
+        "153": {
+            type: "score_variable",
+            variables: ["mtt-1-10","mtt-2-10","mtt-2-11","mtt-1-12","mtt-2-12"]
+        },
+        "154": {
+            type: "score_variable",
+            variables: ["vtp-14","vtp-15"]
+        },
+        "155": {
+            type: "score_variable",
+            variables: ["vtp-14","vtp-15"]
+        },
+        "156": {
+            type: "score_variable",
+            variables: ["vkls-14","vkls-15"]
+        },
+        "157": {
+            type: "score_variable",
+            variables: ["vrkls-15"]
+        },
+        "158": {
+            type: "score_variable",
+            variables: ["vkls-15"]
+        },
+        "159": {
+            type: "score_variable",
+            variables: ["mwin-1-12","mwin-2-12"]
+        },
+        "160": {
+            type: "score_variable",
+            variables: ["mwin-1-10","mwin-2-10"]
+        },
+        "161": {
+            type: "score_variable",
+            variables: ["mwin-2-11"]
+        },
+        "162": {
+            type: "score_variable",
+            variables: ["vkls-14"]
+        },
+        "163": {
+            type: "score_variable",
+            variables: ["vtp-14"]
+        },
+        "164": {
+            type: "score_variable",
+            variables: ["vdstry-15"]
+        },
+        "165": {
+            type: "score_variable",
+            variables: ["vdstry-14"]
+        },
+        "166": {
+            type: "score_variable",
+            variables: ["vdths-15"]
+        },
+        "167": {
+            type: "score_variable",
+            variables: ["vdths-14"]
+        },
+        "168": {
+            type: "",
+            variables: []
         }
-    };
+            };
 
     var NUM_VEHICLES = 16;
     var NUM_WEAPONS = 49;
