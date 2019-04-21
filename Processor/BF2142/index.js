@@ -152,8 +152,9 @@ BF2142Processor.prototype.performAllCalculations = function() {
         let snapshots = await this.snapshotModel.getUnprocessedSnapshots({gameid: this.options.gameid})
         //snapshots = snapshots.slice(-100);
         //let snapshots = [dbg_snapshot];
-        //await this.snapshotProcessor.processSnapshots(snapshots);
-        //await this.calculateLeaderboard();
+        await this.snapshotProcessor.processSnapshots(snapshots);
+        await this.snapshotModel.markSnapshotsProcessed(snapshots);
+        await this.calculateLeaderboard();
         await this.awardProcessor.processAwards();
         resolve();
     }.bind(this));

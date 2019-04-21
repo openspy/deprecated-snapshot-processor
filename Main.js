@@ -926,10 +926,10 @@ async function doPlayerProgressDebug(ctx, database) {
 }
 DbCtx.getDatabaseCtx().then(async function(ctx) {
     var database = ctx.db('gamestats');
-    //setupTHPS5PS2Processor(ctx,database);
-	//setupTHPS5PCProcessor(ctx, database);
-	//setupTHPS6PS2Processor(ctx,database);
-    //setupTHPS6PCProcessor(ctx, database);
+    setupTHPS5PS2Processor(ctx,database);
+	setupTHPS5PCProcessor(ctx, database);
+	setupTHPS6PS2Processor(ctx,database);
+    setupTHPS6PCProcessor(ctx, database);
     setupBF2142Processor(ctx, database);
     //await doPlayerProgressDebug(ctx, database);
     //process.exit(1);
