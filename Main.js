@@ -939,7 +939,7 @@ DbCtx.getDatabaseCtx().then(async function(ctx) {
 		promises.push(i.performAllCalculations());
     }
     Promise.all(promises).then(function() {
-        process.exit(1);
+        process.exit(0);
     })
     
 });
