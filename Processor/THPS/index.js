@@ -52,7 +52,7 @@ THPSProcessor.prototype.processSnapshot = function(snapshot) {
         var max_players = parseInt(game_data.maxplayers);
         for(var i=0;i<max_players;i++) {
             let player_record = {};
-            if(game_data["pid_"+i] === undefined) continue;
+            if(game_data["pid_"+i] == 0 || isNaN(game_data["pid_"+i])) continue; //pid is zero.. or undefined/null
             player_record.name = game_data["player_"+i];
             player_record.pid = parseInt(game_data["pid_"+i]);            
             player_record.combo = parseInt(game_data["combo_"+i]);
@@ -70,9 +70,13 @@ THPSProcessor.prototype.updatePlayerRankings = function() {
 
 THPSProcessor.prototype.performAllCalculations = function() {
     return new Promise(async function(resolve, reject) {
-        let snapshots = await this.snapshotModel.getUnprocessedSnapshots({gameid: this.options.gameid})
-        await this.processSnapshots(snapshots);
-        await this.snapshotModel.markSnapshotsProcessed(snapshots);
+        while(true) {
+            let snapshots = await this.snapshotModel.getUnprocessedSnapshots({gameid: this.options.gameid}, 50);
+            if(snapshots == null || snapshots.length == 0) break;
+            await this.processSnapshots(snapshots);
+            await this.snapshotModel.markSnapshotsProcessed(snapshots);
+        }
+        
         await this.updatePlayerRankings();
         await this.calculateLeaderboard();
         resolve();

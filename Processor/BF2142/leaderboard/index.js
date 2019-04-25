@@ -38,7 +38,7 @@ LeaderboardProcessor.prototype.calculateLeaderboard = function(server_data, play
 
 LeaderboardProcessor.prototype.calculateOverallScore = function() {
     return new Promise(function(resolve, reject) {
-        this.player_progress_collection.aggregate([{$match: {gameid: this.options.gameid, pageKey: "player_info"}}, {$project: {_id: 0, "pid": "$profileid", "nick": "$nick", "globalscore": "$data.gsco", "playerrank": "$data.rnk", "countrycode": "US", "Vet": "0"}}, {$sort: {globalscore: -1}}], function(err, cursor) {
+        this.player_progress_collection.aggregate([{$match: {gameid: this.options.gameid, pageKey: "player_info"}}, {$project: {_id: 0, "pid": "$profileid", "nick": "$nick", "globalscore": "$data.gsco", "playerrank": "$data.rnk", "countrycode": "$countrycode", "Vet": "$vet"}}, {$sort: {globalscore: -1}}], function(err, cursor) {
             
             let results = [];
     
@@ -56,9 +56,9 @@ LeaderboardProcessor.prototype.calculateOverallScore = function() {
 
 LeaderboardProcessor.prototype.calculateEfficiencyScore = function() {
     return new Promise(function(resolve, reject) {
-        this.player_progress_collection.aggregate([{$match: {gameid: this.options.gameid, pageKey: "player_info"}}, {$project: {_id: 0, "rank": "0", "pos": "0", "pid": "$profileid", "nick": "$nick", 
+        this.player_progress_collection.aggregate([{$match: {gameid: this.options.gameid, pageKey: "player_info"}}, {$project: {_id: 0, "pid": "$profileid", "nick": "$nick", 
         "Efficiency": "$data.spm",
-        "countrycode": "US", "Vet": "0"}}, {$sort: {"Efficiency": -1}}], function(err, cursor) {
+        "countrycode": "$countrycode", "Vet": "$vet"}}, {$sort: {"Efficiency": -1}}], function(err, cursor) {
             
             let results = [];
     
@@ -76,9 +76,9 @@ LeaderboardProcessor.prototype.calculateEfficiencyScore = function() {
 
 LeaderboardProcessor.prototype.calculateCommanderScore = function() {
     return new Promise(function(resolve, reject) {
-        this.player_progress_collection.aggregate([{$match: {gameid: this.options.gameid, pageKey: "player_info"}}, {$project: {_id: 0, "rank": "0", "pos": "0", "pid": "$profileid", "nick": "$nick", 
+        this.player_progress_collection.aggregate([{$match: {gameid: this.options.gameid, pageKey: "player_info"}}, {$project: {_id: 0, "pid": "$profileid", "nick": "$nick", 
         "coscore": "$data.cs",
-        "countrycode": "US", "Vet": "0"}}, {$sort: {"coscore": -1}}], function(err, cursor) {
+        "countrycode": "$countrycode", "Vet": "$vet"}}, {$sort: {"coscore": -1}}], function(err, cursor) {
             
             let results = [];
     
@@ -95,9 +95,9 @@ LeaderboardProcessor.prototype.calculateCommanderScore = function() {
 }
 LeaderboardProcessor.prototype.calculateTeamWorkScore = function() {
     return new Promise(function(resolve, reject) {
-        this.player_progress_collection.aggregate([{$match: {gameid: this.options.gameid, pageKey: "player_info"}}, {$project: {_id: 0, "rank": "0", "pos": "0", "pid": "$profileid", "nick": "$nick", 
+        this.player_progress_collection.aggregate([{$match: {gameid: this.options.gameid, pageKey: "player_info"}}, {$project: {_id: 0, "pid": "$profileid", "nick": "$nick", 
         "teamworkscore": "$data.twsc",
-        "countrycode": "US", "Vet": "0"}}, {$sort: {"teamworkscore": -1}}], function(err, cursor) {
+        "countrycode": "$countrycode", "Vet": "$vet"}}, {$sort: {"teamworkscore": -1}}], function(err, cursor) {
             
             let results = [];
     
@@ -115,9 +115,9 @@ LeaderboardProcessor.prototype.calculateTeamWorkScore = function() {
 
 LeaderboardProcessor.prototype.calculateCombatScore = function() {
     return new Promise(function(resolve, reject) {
-        this.player_progress_collection.aggregate([{$match: {gameid: this.options.gameid, pageKey: "player_info"}}, {$project: {_id: 0, "rank": "0", "pos": "0", "pid": "$profileid", "nick": "$nick", 
+        this.player_progress_collection.aggregate([{$match: {gameid: this.options.gameid, pageKey: "player_info"}}, {$project: {_id: 0, "pid": "$profileid", "nick": "$nick", 
         "Kills": "$data.klls", "Deaths": "$data.dths", "Accuracy": "$data.ovaccu", "playerrank": "$data.rnk", "kdr": "$data.kdr",
-        "countrycode": "US", "Vet": "0"}}, {$sort: {kdr: -1}}], function(err, cursor) {
+        "countrycode": "$countrycode", "Vet": "$vet"}}, {$sort: {kdr: -1}}], function(err, cursor) {
             
             let results = [];
     
@@ -139,9 +139,9 @@ LeaderboardProcessor.prototype.calculateWeaponStats = function(weapon_index) {
         var deaths_key = "$data.wdths-" + weapon_index;
         var accuracy_key = "$data.waccu-" + weapon_index;
         var kdr_key = "$data.wkdr-" + weapon_index;
-        var projection = {_id: 0, "rank": "0", "pos": "0", "pid": "$profileid", "nick": "$nick", 
+        var projection = {_id: 0, "pid": "$profileid", "nick": "$nick", 
         "Kills": kills_key, "Deaths": deaths_key, "Accuracy": accuracy_key, "playerrank": "$data.rnk", "kdr": kdr_key,
-        "countrycode": "US", "Vet": "0"};
+        "countrycode": "$countrycode", "Vet": "$vet"};
         var matchOptions = {gameid: this.options.gameid, pageKey: "player_info"};
         matchOptions[kdr_search] = {"$exists": true};
         this.player_progress_collection.aggregate([{$match: matchOptions}, {$project: projection}, {$sort: {"kdr": -1, "Accuracy": -1, "Kills": -1, "Deaths": 1}}], function(err, cursor) {
@@ -169,9 +169,9 @@ LeaderboardProcessor.prototype.calculateVehicleStats = function(vehicle_index) {
         var kills_search = "data.vkls-" + vehicle_index;
         var deaths_search = "data.vdths-" + vehicle_index;
 
-        var projection = {_id: 0, "rank": "0", "pos": "0", "pid": "$profileid", "nick": "$nick", 
+        var projection = {_id: 0, "pid": "$profileid", "nick": "$nick", 
         "Kills": kills_key, "Deaths": deaths_key, "Roadkills": roadkills_kill, "playerrank": "$data.rnk", "kdr": kdr_key,
-        "countrycode": "US", "Vet": "0"};
+        "countrycode": "$countrycode", "Vet": "$vet"};
         var matchOptions = {gameid: this.options.gameid, pageKey: "player_info"};
         matchOptions[kills_search] = {"$gt": 0};
         matchOptions[deaths_search] = {"$gt": 0};

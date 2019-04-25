@@ -37,9 +37,11 @@ SnapshotProcessor.prototype.getDogtags = function(player_num, snapshot) {
 }
 SnapshotProcessor.prototype.processSnapshot = function(snapshot) {
     return new Promise(async function(resolve, reject) {
+        
         if(!snapshot || !snapshot.updates || snapshot.updates.length != 1) {
             return reject({message: "invalid snapshot data"});
         }
+
         let game_data = snapshot.updates[0].data;
 
         var num_players = 0;
@@ -50,7 +52,7 @@ SnapshotProcessor.prototype.processSnapshot = function(snapshot) {
         } while(player_profileid !== undefined);
 
         let player_variables = [];
-        for(let i=0;i<num_players;i++) {
+        for(let i=0;i<=num_players;i++) {
             player_variables[i] = {};
         }
         let server_variables = {ip: snapshot.ip};

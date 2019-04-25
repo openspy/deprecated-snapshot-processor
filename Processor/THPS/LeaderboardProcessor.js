@@ -17,7 +17,7 @@ LeaderboardProcessor.prototype.calculateAllTimeHighScoreForLevel = function(leve
         var highscore_key = dataset_name + ".highscore";
         var highscore_accessor_key = dataset_accessor_name + ".highscore";
 
-        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "highscore"}}], function(err, cursor) {
+        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "rating": "$data.rating", "type": "$highscore"}}], function(err, cursor) {
             
             let results = [];
  
@@ -45,13 +45,10 @@ LeaderboardProcessor.prototype.calculateAllTimeBestComboForLevel = function(leve
         var highcombo_key = dataset_name + ".highcombo";
         var highcombo_accessor_key = dataset_accessor_name + ".highcombo";
 
-        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highcombo_key: -1}}, {$limit: this.options.leaderboard_limit}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highcombo_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "bestcombo"}}], function(err, cursor) {
+        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highcombo_key: -1}}, {$limit: this.options.leaderboard_limit}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highcombo_accessor_key, "rating": "$data.rating", "type": "$bestcombo"}}], function(err, cursor) {
             let results = [];
  
             cursor.on('data', function(data) {
-                if(data.profileid == 18304) {
-                    console.log(level_crc, data);
-                }
                 if(data.score)
                     results.push(data);
             });
@@ -74,7 +71,7 @@ LeaderboardProcessor.prototype.calculateRecentHighScoreForLevel = function(level
         var highscore_accessor_key = dataset_accessor_name + ".recent_highscore";
         var highscore_time_accessor_key = dataset_accessor_name + ".recent_highscore_time";
 
-        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "time": highscore_time_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "highscore"}}], function(err, cursor) {
+        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "time": highscore_time_accessor_key, "rating": "$data.rating", "type": "$highscore"}}], function(err, cursor) {
             
             let results = [];
  
@@ -103,7 +100,7 @@ LeaderboardProcessor.prototype.calculateRecentBestComboForLevel = function(level
         var highscore_accessor_key = dataset_accessor_name + ".recent_highcombo";
         var highscore_time_accessor_key = dataset_accessor_name + ".recent_highcombo_time";
 
-        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "time": highscore_time_accessor_key, "mapnamecrc": level_crc.toString(), "rating": "$data.rating", "type": "highcombo"}}], function(err, cursor) {
+        this.player_progress_collection.aggregate([{"$match": {gameid: this.options.gameid}}, {$sort: {highscore_key: -1}}, {"$project": {_id: 0,"profileid": "$profileid", "nick": "$last_name", "score": highscore_accessor_key, "time": highscore_time_accessor_key, "rating": "$data.rating", "type": "$highcombo"}}], function(err, cursor) {
             
             let results = [];
  
@@ -128,7 +125,8 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
         
         let now = Date.now();
 
-        let leaderboard_data = await this.leaderboardModel.fetch({gameid: this.options.gameid});
+        let entry_data = await this.leaderboardModel.fetch({gameid: this.options.gameid});
+        var leaderboard_data = entry_data.data || {};
 
         if(!leaderboard_data.high_scores_alltime) {
             leaderboard_data.high_scores_alltime = {};
@@ -178,8 +176,8 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
                 
             }
         }
-        leaderboard_data.modified = now;
-        await this.leaderboardModel.insertOrUpdate(leaderboard_data);
+        entry_data = {data: leaderboard_data, modified: now, gameid: this.options.gameid};
+        await this.leaderboardModel.insertOrUpdate(entry_data);
         resolve();
     }.bind(this));
 }

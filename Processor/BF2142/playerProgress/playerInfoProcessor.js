@@ -1,4 +1,5 @@
 var PlayerRecordModel = require('../../../lib/PlayerRecordModel');
+var ProfileLookup = new (require('../../../lib/ProfileLookup'))();
 function PlayerInfoProcessor(DbCtx, database, options) {
     this.options = options;
     this.DbCtx = DbCtx;
@@ -72,8 +73,19 @@ function PlayerInfoProcessor(DbCtx, database, options) {
     ]
 }
 PlayerInfoProcessor.prototype.processPlayerInfo = function(server_data, player_snapshot_data) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(async function(resolve, reject) {
         //if(player_snapshot_data.c != 1) return resolve(); //player quit early... ignore stats
+        try {        
+            var profileData = await ProfileLookup.Lookup({id: player_snapshot_data.pid});
+            if(profileData == null || profileData.length == 0)  { //skip invalid profile
+                //console.log("skip invalid profile", player_snapshot_data.pid)
+                return resolve(); 
+            }
+        } catch(e) {
+            console.warn("profileid", player_snapshot_data.pid, e);
+            profileData = [{id: player_snapshot_data.pid }];
+        }
+        profileData = profileData[0];
         var pageKey = "player_info";
         this.playerRecordModel.fetch({pageKey, gameid: this.options.gameid, profileid: player_snapshot_data.pid}).then(function(progress) {
             progress.profileid = player_snapshot_data.pid;
@@ -108,6 +120,8 @@ PlayerInfoProcessor.prototype.processPlayerInfo = function(server_data, player_s
                 progress.data = progressData;
                 progress.nick = player_snapshot_data.nick;
                 progress.profileid = player_snapshot_data.pid;
+                progress.vet = 0;
+                progress.countrycode = profileData.countrycode || "US";
                 progress.gameid = this.options.gameid;
                 progress.modified = Date.now();
                 this.playerRecordModel.insertOrUpdate(progress).then(resolve, reject);

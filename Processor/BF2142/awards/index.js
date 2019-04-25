@@ -56,7 +56,6 @@ AwardProcessor.prototype.processAllTimeAwards = function() {
 
 AwardProcessor.prototype.ProcessPlayerAward = function(player_info) {
     return new Promise(async function(resolve, reject) {
-        if(player_info.profileid != 2446667) return resolve();
         var player_best_rounds = await this.GetBestRoundData(player_info.profileid);
         for(var i=0;i<this.options.awardSettings.length;i++) {
             var award = this.options.awardSettings[i];
@@ -68,8 +67,10 @@ AwardProcessor.prototype.ProcessPlayerAward = function(player_info) {
 AwardProcessor.prototype.CheckPlayerAward = function(player_info, player_best_rounds, award) {
     return new Promise(async function(resolve, reject) {
         var mapping = this.options.awardVariableMapping;
+        if(player_info == null || player_best_rounds == null) return resolve();
         var player_data = player_info.data;
         var best_rounds_data = player_best_rounds.data;
+        if(player_info.data == null || player_best_rounds.data == null) return resolve();
         var rule_matches = [];
         var full_match = true;
         var allow_multiple = true;

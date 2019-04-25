@@ -149,11 +149,13 @@ BF2142Processor.prototype.calculateLeaderboard = function() {
 
 BF2142Processor.prototype.performAllCalculations = function() {
     return new Promise(async function(resolve, reject) {
-        let snapshots = await this.snapshotModel.getUnprocessedSnapshots({gameid: this.options.gameid})
-        //snapshots = snapshots.slice(-100);
-        //let snapshots = [dbg_snapshot];
-        await this.snapshotProcessor.processSnapshots(snapshots);
-        await this.snapshotModel.markSnapshotsProcessed(snapshots);
+        while(true) {
+            let snapshots = await this.snapshotModel.getUnprocessedSnapshots({gameid: this.options.gameid}, 50);
+            if(snapshots == null || snapshots.length == 0) break;
+            await this.snapshotProcessor.processSnapshots(snapshots);
+            await this.snapshotModel.markSnapshotsProcessed(snapshots);
+        }
+        
         await this.calculateLeaderboard();
         await this.awardProcessor.processAwards();
         resolve();
