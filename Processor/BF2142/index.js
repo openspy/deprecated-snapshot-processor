@@ -4,6 +4,7 @@ var LeaderboardProcessor = require('./leaderboard');
 var SnapshotModel = require('../../lib/SnapshotModel');
 var PlayerRecordModel = require('../../lib/PlayerRecordModel');
 var AwardProcessor = require('./awards');
+
 function BF2142Processor(DbCtx, database, options) {
     options.handleCalculatedVariables = handleCalculatedVariables.bind(this);
     this.options = options;
@@ -155,7 +156,7 @@ BF2142Processor.prototype.performAllCalculations = function() {
             await this.snapshotProcessor.processSnapshots(snapshots);
             await this.snapshotModel.markSnapshotsProcessed(snapshots);
         }
-        
+        await this.snapshotProcessor.saveCatigorizedPlayerInfoData();
         await this.calculateLeaderboard();
         await this.awardProcessor.processAwards();
         resolve();

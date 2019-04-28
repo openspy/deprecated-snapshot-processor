@@ -81,5 +81,7 @@ SnapshotProcessor.prototype.processSnapshot = function(snapshot) {
         
     }.bind(this));
 };
-
+SnapshotProcessor.prototype.saveCatigorizedPlayerInfoData = function() {
+    return this.playerRecordProcessor.saveCatigorizedPlayerInfoData();
+}
 module.exports = SnapshotProcessor;

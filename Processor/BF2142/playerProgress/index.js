@@ -41,6 +41,8 @@ PlayerRecordProcessor.prototype.saveSnapshot = function(server_data, player_reco
         });
     }.bind(this));
 }
-
+PlayerRecordProcessor.prototype.saveCatigorizedPlayerInfoData = function() {
+    return this.playerInfoProcessor.saveCatigorizedData();
+}
 
 module.exports = PlayerRecordProcessor;
