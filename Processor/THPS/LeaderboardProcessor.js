@@ -176,7 +176,10 @@ LeaderboardProcessor.prototype.setLeaderboard = function(results) {
                 
             }
         }
+        var _id = entry_data._id;
         entry_data = {data: leaderboard_data, modified: now, gameid: this.options.gameid};
+        if(_id !== undefined)
+            entry_data._id = _id;
         await this.leaderboardModel.insertOrUpdate(entry_data);
         resolve();
     }.bind(this));

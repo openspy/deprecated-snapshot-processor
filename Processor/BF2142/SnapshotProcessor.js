@@ -1,4 +1,5 @@
 var PlayerRecordProcessor = require('./playerProgress');
+var ProfileLookup = new (require('../../lib/ProfileLookup'))();
 function SnapshotProcessor(DbCtx, database, options) {
     this.playerRecordProcessor = new PlayerRecordProcessor(DbCtx, database, options);
 }
@@ -14,7 +15,7 @@ SnapshotProcessor.prototype.processSnapshots = function(snapshots) {
         resolve();
     }.bind(this));
 };
-SnapshotProcessor.prototype.getDogtags = function(player_num, snapshot) {
+SnapshotProcessor.prototype.getDogtags = async function(player_num, snapshot) {
     var key = "pdt_" + player_num;
     if(snapshot[key] == undefined) return {};
     var dogtag_data = snapshot[key].replace('{', '[').replace('}', ']').replace(/:/g, ',');
@@ -25,6 +26,10 @@ SnapshotProcessor.prototype.getDogtags = function(player_num, snapshot) {
             var profileid_key = "pid_" + (dogtags[i]);
             var nick_key = "nick_" + dogtags[i];
             var profileid = parseInt(snapshot[profileid_key]);
+            var profileData = await ProfileLookup.Lookup({id: profileid});
+            if(profileData == null || profileData.length == 0)  { //skip invalid profile
+                continue;
+            }
             var dogtag = {};
             dogtag.profileid = profileid;
             dogtag.nick = snapshot[nick_key];
@@ -72,7 +77,7 @@ SnapshotProcessor.prototype.processSnapshot = function(snapshot) {
         let player_progress_promises = [];
         for(let i=0;i<num_players;i++) {
             player_variables[i].pid = parseInt(player_variables[i].pid);
-            player_variables[i].pdt = this.getDogtags(i, game_data);
+            player_variables[i].pdt = await this.getDogtags(i, game_data);
             player_progress_promises.push(this.playerRecordProcessor.processRecord(server_variables, player_variables[i]));
         }
         return Promise.all(player_progress_promises).then(function(results) {
