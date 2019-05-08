@@ -17,6 +17,7 @@ function BF2142Processor(DbCtx, database, options) {
     this.awardProcessor = new AwardProcessor(DbCtx, database, options);
 }
 BF2142Processor.prototype.getRankFromScore = function(score) {
+    score = parseInt(score);
     var highest_score = 0;
     for(var i = 0;i < this.options.scoreSettings.length;i++) {
         var setting = this.options.scoreSettings[i];
@@ -30,7 +31,13 @@ BF2142Processor.prototype.getRankFromScore = function(score) {
 }
 var handleCalculatedVariables = function(server_data, player_snapshot_data, current_progress) {
     //kill death ratio, time as titan, etc
+
+    var rank = parseInt(current_progress.rnk || "0");
     current_progress.rnk = this.getRankFromScore(current_progress.crpt);
+    if(current_progress.rnk != rank) {
+        console.log(current_progress.pid, "rank was", rank, "now", current_progress.rnk);
+        current_progress.rnkcg = "1";
+    }
 
     var kills_diff = current_progress.klls - current_progress.dths;
     if(current_progress.dths > 0) {
