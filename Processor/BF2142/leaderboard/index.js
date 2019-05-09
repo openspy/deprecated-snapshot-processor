@@ -117,7 +117,7 @@ LeaderboardProcessor.prototype.calculateCombatScore = function() {
     return new Promise(function(resolve, reject) {
         this.player_progress_collection.aggregate([{$match: {gameid: this.options.gameid, pageKey: "player_info"}}, {$project: {_id: 0, "pid": "$profileid", "nick": "$nick", 
         "Kills": "$data.klls", "Deaths": "$data.dths", "Accuracy": "$data.ovaccu", "playerrank": "$data.rnk", "kdr": "$data.kdr",
-        "countrycode": "$countrycode", "Vet": "$vet"}}, {$sort: {"Kdr": -1, "Kills": -1, "Deaths": 1}}], function(err, cursor) {
+        "countrycode": "$countrycode", "Vet": "$vet"}}, {$sort: {"Kills": -1}}], function(err, cursor) {
             
             let results = [];
     
