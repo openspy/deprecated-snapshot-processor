@@ -100,7 +100,9 @@ PlayerInfoProcessor.prototype.processPlayerInfo = function(server_data, player_s
                 if(progress.data[key] === undefined) {
                     progress.data[key] = 0;
                 }
-                progress.data[key] += parseFloat(player_snapshot_data[key]);
+                var v = parseFloat(player_snapshot_data[key]);
+                if(isFinite(v))
+                    progress.data[key] += v;
             }
     
             for(var i = 0;i<this.playerProgressGreaterKeys.length;i++) {
@@ -109,7 +111,7 @@ PlayerInfoProcessor.prototype.processPlayerInfo = function(server_data, player_s
                     progress.data[key] = 0;
                 }
                 var value = parseFloat(player_snapshot_data[key]);
-                if(value > progress.data[key])
+                if(isFinite(value) && value > progress.data[key])
                     progress.data[key] = value;
             }
 

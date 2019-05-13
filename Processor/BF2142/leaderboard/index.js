@@ -144,7 +144,7 @@ LeaderboardProcessor.prototype.calculateWeaponStats = function(weapon_index) {
         "countrycode": "$countrycode", "Vet": "$vet"};
         var matchOptions = {gameid: this.options.gameid, pageKey: "player_info"};
         matchOptions[kdr_search] = {"$exists": true};
-        this.player_progress_collection.aggregate([{$match: matchOptions}, {$project: projection}, {$sort: {"kdr": -1, "Accuracy": -1, "Kills": -1, "Deaths": 1}}], function(err, cursor) {
+        this.player_progress_collection.aggregate([{$match: matchOptions}, {$project: projection}, {$sort: {"Kills": -1, "Deaths": 1}}], function(err, cursor) {
             
             let results = [];
     
@@ -175,7 +175,7 @@ LeaderboardProcessor.prototype.calculateVehicleStats = function(vehicle_index) {
         var matchOptions = {gameid: this.options.gameid, pageKey: "player_info"};
         matchOptions[kills_search] = {"$gt": 0};
         matchOptions[deaths_search] = {"$gt": 0};
-        this.player_progress_collection.aggregate([{$match: matchOptions}, {$project: projection}, {$sort: {"Kdr": -1, "Kills": -1, "Deaths": 1}}], function(err, cursor) {
+        this.player_progress_collection.aggregate([{$match: matchOptions}, {$project: projection}, {$sort: {"Kills": -1, "Deaths": 1}}], function(err, cursor) {
             
             let results = [];
     

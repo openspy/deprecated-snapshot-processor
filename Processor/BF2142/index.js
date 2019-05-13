@@ -33,9 +33,10 @@ var handleCalculatedVariables = function(server_data, player_snapshot_data, curr
     //kill death ratio, time as titan, etc
 
     var rank = parseInt(current_progress.rnk || "0");
-    current_progress.rnk = this.getRankFromScore(current_progress.crpt);
-    if(current_progress.rnk != rank) {
-        console.log(current_progress.pid, "rank was", rank, "now", current_progress.rnk);
+    var new_rank = this.getRankFromScore(current_progress.crpt);
+    if(new_rank > rank) {
+        console.log(current_progress.pid, "rank was", rank, "now", new_rank);
+        current_progress.rnk = new_rank;
         current_progress.rnkcg = "1";
     }
 
